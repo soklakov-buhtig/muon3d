@@ -147,7 +147,8 @@ if run_vortex:
 # === Отдельный блок: Фиксация ориентации и 3D-анимация ===
 if "last_3d_run" in st.session_state:
     st.divider()
-    st.subheader("3D-анимация с фиксацией ориентации и приближения")
+    lock_and_animate = st.button("Зафиксировать и запустить эволюцию по времени", use_container_width=True)
+
     c_az, c_el, c_zm, c_btn = st.columns([1, 1, 1, 1.3])
     azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
     elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
