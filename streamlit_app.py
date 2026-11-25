@@ -215,10 +215,22 @@ if "last_3d_run" in st.session_state:
         snaps = st.session_state["snapshot_history"]
         st.subheader(f"Snapshot History ({len(snaps)} растровых PNG-кадров, камера зафиксирована)")
         snap_idx = st.slider("Просмотр растрового кадра", 1, len(snaps), 1, step=1)
-        st.image(snaps[snap_idx - 1], use_container_width=False)
-        st.download_button(
+        snap_slot = st.empty()
+
+        col_dl, col_play = st.columns([1, 1.2])
+        col_dl.download_button(
             label=f"Скачать текущий PNG-кадр #{snap_idx}",
             data=snaps[snap_idx - 1],
             file_name=f"vortex_snapshot_{snap_idx:02d}.png",
             mime="image/png",
+            use_container_width=True,
         )
+        play_snaps = col_play.button("Запустить анимацию истории снэпшотов", use_container_width=True)
+
+        if play_snaps:
+            import time
+            for frame_bytes in snaps:
+                snap_slot.image(frame_bytes, use_container_width=False)
+                time.sleep(0.08)
+        else:
+            snap_slot.image(snaps[snap_idx - 1], use_container_width=False)
