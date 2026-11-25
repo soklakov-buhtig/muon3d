@@ -53,3 +53,80 @@ medium = {
 col_btn1, col_btn2 = st.columns(2)
 run_vortex = col_btn1.button("Запустить 3D-релаксацию узла", type="primary", use_container_width=True)
 run_noise = col_btn2.button("Тест №1: Устойчивость шума (ψ ≈ 0)", use_container_width=True)
+if run_noise:
+    with st.spinner("Запуск Теста №1 (релаксация малого шума вокруг ψ = 0)..."):
+        grid = build_3d_grid(R0_init, N=N_grid, box_scale=box_scale)
+        psi_noise = init_noise_field_3d(grid, noise_amp=1e-3)
+        res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
+        E_start = res["history"]["E_total"]
+        E_end = res["energies"]["E_total"]
+        st.subheader("Результаты Теста №1 (устойчивость на малом шуме)")
+        st.write(f"**Начальная энергия шума:** `{E_start:.6e} МэВ` → **Конечная:** `{E_end:.6e} МэВ` (шагов: `{res['steps_done']}`)")
+        if abs(E_end) <= abs(E_start) * 1.05:
+            st.success("Тест №1 пройден: шум затухает, схема leapfrog (dt = tau / 2) устойчива.")
+        else:
+            st.error("Внимание: энергия шума выросла — проверьте шаг или коэффициенты среды.")
+
+if run_vortex:
+    with st.spinner(f"Релаксация 3D-узла ({m_tor}, {n_pol}) на сетке {N_grid}³..."):
+        grid = build_3d_grid(R0_init, N=N_grid, box_scale=box_scale)
+        psi0 = init_hopf_vortex_3d(grid, R0_init, sig_init, m_tor, n_pol)
+        res = relax_vortex_3d(
+            psi0, grid, medium,
+            max_steps=max_steps,
+            norm_interval=DEFAULT_GRID["norm_interval"],
+            tol_energy=DEFAULT_GRID["tol_energy"],
+            renormalize=True,
+        )
+        obs = analyze_relaxed_vortex_3d(res["psi"], grid, medium, m_tor, n_pol)
+
+    st.subheader(f"Результаты 3D-релаксации ({m_tor}, {n_pol}) | dt = {res['dt']:.3f}")
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Масса 3D (МэВ)", f"{obs['mass_mev']:.5f}")
+    c2.metric("R0 (fm)", f"{obs['R0_fm']:.3f}")
+    c3.metric("σ (fm)", f"{obs['sigma_fm']:.3f}")
+    c4.metric("n_eff (max / mean)", f"{obs['n_eff_max']:.3f} / {obs['n_eff_mean']:.3f}")
+    c5.metric("g-фактор", f"{obs['g_factor']:.6f}")
+
+    # Тест №2: Сохранение топологии
+    topo = obs["topology"]
+    if topo["topology_preserved"]:
+        st.success(f"Тест №2 (топология сохранена): измерено ({topo['m_measured']:.2f}, {topo['n_measured']:.2f}) ≈ ({m_tor}, {n_pol})")
+    else:
+        st.warning(f"Тест №2 (дрейф топологии): измерено ({topo['m_measured']:.2f}, {topo['n_measured']:.2f}) при цели ({m_tor}, {n_pol}) — попробуйте крупнее сетку N³.")
+
+    st.write(
+        f"**Энергии (МэВ):** `E_total = {obs['energies']['E_total']:.4f}` | "
+        f"`E1 = {obs['energies']['E1']:.4f}` | `E2 = {obs['energies']['E2']:.4f}` | "
+        f"`E3 = {obs['energies']['E3']:.4f}` | `E4 = {obs['energies']['E4']:.4f}` | "
+        f"**Шагов:** `{res['steps_done']}` (сходимость: `{res['converged']}`)"
+    )
+
+    col_v1, col_v2 = st.columns(2)
+    with col_v1:
+        # 3D-изоповерхность плотности |psi|^2
+        u_field = np.abs(res["psi"]) ** 2
+        u_max = float(np.max(u_field))
+        fig3d = go.Figure(data=go.Isosurface(
+            x=grid["X"].flatten(),
+            y=grid["Y"].flatten(),
+            z=grid["Z"].flatten(),
+            value=u_field.flatten(),
+            isomin=0.25 * u_max,
+            isomax=0.85 * u_max,
+            surface_count=3,
+            colorscale="Turbo",
+            opacity=0.65,
+            caps=dict(x_show=False, y_show=False, z_show=False),
+        ))
+        fig3d.update_layout(title="3D-изоповерхность плотности |ψ|²", height=430, margin=dict(l=0, r=0, t=40, b=0))
+        st.plotly_chart(fig3d, use_container_width=True)
+
+    with col_v2:
+        # График релаксации энергии по шагам
+        steps_arr = [h["step"] for h in res["history"]]
+        e_tot_arr = [h["E_total"] for h in res["history"]]
+        fig_e = go.Figure()
+        fig_e.add_trace(go.Scatter(x=steps_arr, y=e_tot_arr, mode="lines+markers", name="E_total (МэВ)"))
+        fig_e.update_layout(title="Сходимость полной 3D-энергии E(t)", xaxis_title="Шаг", yaxis_title="МэВ", height=430)
+        st.plotly_chart(fig_e, use_container_width=True)
