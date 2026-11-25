@@ -1,8 +1,9 @@
 import numpy as np
 import plotly.graph_objects as go
 
+def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36, time_label=""):
 
-def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36):
+#def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36):
     """
     Создаёт интерактивную 3D-анимацию вращения релаксированного узла
     с фиксацией выбранного начального ракурса (азимут, угол места и приближение).
@@ -64,7 +65,10 @@ def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoo
 
     fig = go.Figure(data=[base_trace], frames=frames)
     fig.update_layout(
-        title=f"3D-анимация узла (ракурс: {azim_deg:.0f}°, наклон: {elev_deg:.0f}°, зум: {zoom:.1f}×)",
+ #       title=f"3D-анимация узла (ракурс: {azim_deg:.0f}°, наклон: {elev_deg:.0f}°, зум: {zoom:.1f}×)",
+
+        title=f"3D-анимация узла | {time_label} (ракурс: {azim_deg:.0f}°, наклон: {elev_deg:.0f}°, зум: {zoom:.1f}×)",
+
         height=560,
         margin=dict(l=0, r=0, t=45, b=0),
         scene=dict(
