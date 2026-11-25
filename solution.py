@@ -11,6 +11,7 @@ def relax_vortex_3d(
     tol_energy=1e-6,
     renormalize=True,
     target_amp=1.0,
+    norm_interval=5,
 ):
     """
     Релаксация 3D-поля psi(x, y, z) по схеме leapfrog + вязкость с шагом dt = tau / 2.
@@ -49,7 +50,8 @@ def relax_vortex_3d(
     converged = False
 
     for step in range(1, int(max_steps) + 1):
-  #      force = -dE_dpsi * cfl_scale
+        max_grad = float(np.max(np.abs(dE_dpsi)))
+        force = -dE_dpsi * cfl_scale
 
         # Шаг leapfrog с демпфированием
         psi_new = (
