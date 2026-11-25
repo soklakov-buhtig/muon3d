@@ -6,8 +6,6 @@ def relax_vortex_3d(
     psi_init,
     grid,
     medium,
-    renormalize=True,
-    target_amp=1.0,
     max_steps=600,
     tol_energy=1e-6,
     renormalize=True,
