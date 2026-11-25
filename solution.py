@@ -24,7 +24,10 @@ def relax_vortex_3d(
 
     # Масштабный множитель для согласования размерности dE/dpsi с шагом сетки dx
     # Гарантирует выполнение условия Куранта (CFL) при любом R0_fm
-    cfl_scale = (dx ** 2) / 200.0
+#    cfl_scale = (dx ** 2) / 200.0
+    # Адаптивная нормировка шага по пиковому градиенту (исключает взрыв и сдувание при любом dx)
+    max_grad = float(np.max(np.abs(dE_dpsi)))
+    cfl_scale = 0.05 / max(max_grad, 1e-12)
 
     psi = psi_init.copy().astype(np.complex128)
     psi_old = psi.copy()
@@ -46,7 +49,7 @@ def relax_vortex_3d(
     converged = False
 
     for step in range(1, int(max_steps) + 1):
-        force = -dE_dpsi * cfl_scale
+  #      force = -dE_dpsi * cfl_scale
 
         # Шаг leapfrog с демпфированием
         psi_new = (
