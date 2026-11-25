@@ -2,22 +2,20 @@ import numpy as np
 import plotly.graph_objects as go
 
 
-def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36, time_label=""):
-
-#def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36):
-    """
-    Создаёт интерактивную 3D-анимацию вращения релаксированного узла
-    с фиксацией выбранного начального ракурса (азимут, угол места и приближение).
-    """
-    u_field = np.abs(psi) ** 2
-    u_max = float(np.max(u_field))
+def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, phase_t=0.0, time_label=""):
+    # Эволюция волны во времени psi(r, t) = psi(r) * exp(-i * phase_t)
+    # Визуализируем огибающую + бегущую фазовую волну Re(psi * exp(-i * phase_t)) при неподвижной камере
+    psi_t = psi * np.exp(-1j * float(phase_t))
+    amp = np.abs(psi_t)
+    wave_field = (amp ** 2) * (0.65 + 0.35 * np.cos(np.angle(psi_t)))
+    u_max = float(np.max(wave_field))
     if u_max <= 0:
         u_max = 1.0
 
     X_flat = grid["X"].flatten()
     Y_flat = grid["Y"].flatten()
     Z_flat = grid["Z"].flatten()
-    V_flat = u_field.flatten()
+    V_flat = wave_field.flatten()
 
     # Перевод углов камеры и зума в координаты Plotly scene.camera.eye
     r_cam = 2.6 / max(float(zoom), 0.2)
@@ -44,7 +42,8 @@ def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.
 
     # Генерация кадров плавного облёта вокруг зафиксированного ракурса и зума
     frames = []
-    angles = np.linspace(0.0, 2.0 * np.pi, int(n_frames), endpoint=False)
+    angles = [0.0]
+#    angles = np.linspace(0.0, 2.0 * np.pi, int(n_frames), endpoint=False)
     for idx, d_az in enumerate(angles):
         az = az0 + d_az
         ex = r_cam * np.cos(el0) * np.cos(az)
