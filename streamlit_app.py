@@ -74,7 +74,7 @@ if run_vortex:
         res = relax_vortex_3d(
             psi0, grid, medium,
             max_steps=max_steps,
-            norm_interval=DEFAULT_GRID["norm_interval"],
+            norm_interval=5,
             tol_energy=DEFAULT_GRID["tol_energy"],
             renormalize=True,
         )
