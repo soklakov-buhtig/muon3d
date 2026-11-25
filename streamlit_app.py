@@ -207,7 +207,7 @@ if "last_3d_run" in st.session_state:
                 azim_deg=azim_deg,
                 elev_deg=elev_deg,
                 zoom=zoom_val,
-                n_frames=16,
+                n_frames=160,
             )
             st.session_state["snapshot_history"] = snaps
 
