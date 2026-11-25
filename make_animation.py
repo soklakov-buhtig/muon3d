@@ -130,3 +130,23 @@ def build_snapshot_history_pngs(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.
         png_list.append(buf.getvalue())
 
     return png_list
+def build_vortex_gif(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=16, fps=12):
+    """Собирает готовую зацикленную GIF-анимацию эволюции 3D-узла с фиксированной камеры."""
+    import io
+    from PIL import Image
+
+    png_list = build_snapshot_history_pngs(
+        psi, grid, azim_deg=azim_deg, elev_deg=elev_deg, zoom=zoom, n_frames=n_frames
+    )
+    frames = [Image.open(io.BytesIO(b)).convert("P", palette=Image.ADAPTIVE) for b in png_list]
+    gif_buf = io.BytesIO()
+    frames.save(
+        gif_buf,
+        format="GIF",
+        save_all=True,
+        append_images=frames[1:],
+        duration=int(1000 / max(int(fps), 1)),
+        loop=0,
+    )
+    gif_buf.seek(0)
+    return gif_buf.getvalue()
