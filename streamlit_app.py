@@ -76,7 +76,7 @@ if run_vortex:
         res = relax_vortex_3d(
             psi0, grid, medium,
             max_steps=max_steps,
-            norm_interval=5,
+            norm_interval=1,
             tol_energy=DEFAULT_GRID["tol_energy"],
             renormalize=True,
         )
@@ -147,27 +147,34 @@ if "last_3d_run" in st.session_state:
     azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
     elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
     zoom_val = c_zm.slider("Приближение (×)", 0.5, 4.0, 1.6, step=0.1)
-
     with c_btn:
         st.write("")
         st.write("")
-        lock_and_animate = st.button("Зафиксировать и запустить анимацию", use_container_width=True)
+        lock_and_animate = st.button("Зафиксировать и крутить 360°", use_container_width=True)
+
+    run_data = st.session_state["last_3d_run"]
+    anim_slot = st.empty()
 
     if lock_and_animate:
-        st.session_state["anim_camera"] = {
-            "azim": azim_deg,
-            "elev": elev_deg,
-            "zoom": zoom_val,
-        }
-
-    if "anim_camera" in st.session_state:
-        cam = st.session_state["anim_camera"]
-        run_data = st.session_state["last_3d_run"]
-        fig_anim = build_vortex_rotation_animation(
+        import time
+        for d_az in range(0, 361, 15):
+            fig_step = build_vortex_rotation_animation(
+                run_data["psi"],
+                run_data["grid"],
+                azim_deg=(azim_deg + d_az) % 360,
+                elev_deg=elev_deg,
+                zoom=zoom_val,
+                n_frames=1,
+            )
+            anim_slot.plotly_chart(fig_step, use_container_width=True, key=f"anim_{d_az}")
+            time.sleep(0.06)
+    else:
+        fig_preview = build_vortex_rotation_animation(
             run_data["psi"],
             run_data["grid"],
-            azim_deg=cam["azim"],
-            elev_deg=cam["elev"],
-            zoom=cam["zoom"],
+            azim_deg=azim_deg,
+            elev_deg=elev_deg,
+            zoom=zoom_val,
+            n_frames=1,
         )
-        st.plotly_chart(fig_anim, use_container_width=True)
+        anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
