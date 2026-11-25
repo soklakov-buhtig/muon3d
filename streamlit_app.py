@@ -156,27 +156,32 @@ if "last_3d_run" in st.session_state:
 
     run_data = st.session_state["last_3d_run"]
     anim_slot = st.empty()
-
     if lock_and_animate:
         import time
-        for d_az in range(0, 361, 15):
-            fig_step = build_vortex_rotation_animation(
+        t_start = time.time()
+        for step_t in range(25):
+            phase_t = 2.0 * np.pi * (step_t / 24.0)
+            elapsed = time.time() - t_start
+            t_str = f"t = {elapsed:.2f} с (фаза {step_t}/24 T)"
+            fig_step = build_vortex_time_animation(
                 run_data["psi"],
                 run_data["grid"],
-                azim_deg=(azim_deg + d_az) % 360,
+                azim_deg=azim_deg,
                 elev_deg=elev_deg,
                 zoom=zoom_val,
-                n_frames=1,
+                phase_t=phase_t,
+                time_label=t_str,
             )
-            anim_slot.plotly_chart(fig_step, use_container_width=True, key=f"anim_{d_az}")
+            anim_slot.plotly_chart(fig_step, use_container_width=True, key=f"anim_t_{step_t}")
             time.sleep(0.06)
     else:
-        fig_preview = build_vortex_rotation_animation(
+        fig_preview = build_vortex_time_animation(
             run_data["psi"],
             run_data["grid"],
             azim_deg=azim_deg,
             elev_deg=elev_deg,
             zoom=zoom_val,
-            n_frames=1,
+            phase_t=0.0,
+            time_label="t = 0.00 с (камера зафиксирована)",
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
