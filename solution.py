@@ -49,7 +49,9 @@ def relax_vortex_3d(
 
     for step in range(1, int(max_steps) + 1):
         max_grad = float(np.max(np.abs(dE_dpsi)))
-        cfl_scale = 0.05 / max(max_grad, 1e-12)
+#        cfl_scale = 0.05 / max(max_grad, 1e-12)
+        cfl_scale = 0.005 / max(max_grad, 1e-12)
+
         force = -dE_dpsi * cfl_scale
 
         # Шаг leapfrog с демпфированием
