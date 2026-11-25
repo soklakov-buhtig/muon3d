@@ -56,6 +56,15 @@ def relax_vortex_3d(
 
         # Шаг leapfrog с демпфированием
         psi_new = (
+                    # Гашение высокочастотной сеточной ряби (стабилизация 3D-разностей)
+        lap = (
+            np.roll(psi_new, 1, 0) + np.roll(psi_new, -1, 0)
+            + np.roll(psi_new, 1, 1) + np.roll(psi_new, -1, 1)
+            + np.roll(psi_new, 1, 2) + np.roll(psi_new, -1, 2)
+            - 6.0 * psi_new
+        )
+        psi_new = (psi_new + 0.04 * lap) * mask
+
             2.0 * psi
             - psi_old
             + (dt ** 2) * force
