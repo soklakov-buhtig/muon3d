@@ -77,3 +77,8 @@ def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.
             aspectmode="data",
             camera=dict(
                 eye=dict(x=float(eye_x0), y=float(eye_y0), z=float(eye_z0)),
+                up=dict(x=0.0, y=0.0, z=1.0),
+            ),
+        ),
+    )
+    return fig
