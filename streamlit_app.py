@@ -148,11 +148,13 @@ if run_vortex:
 if "last_3d_run" in st.session_state:
     st.divider()
 
-
-    c_az, c_el, c_zm, c_btn = st.columns([1, 1, 1, 1.3])
+    c_az, c_el, c_zm, c_ph, c_btn = st.columns([1, 1, 1, 1, 1.4])
     azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
     elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
     zoom_val = c_zm.slider("Приближение (×)", 0.5, 4.0, 1.6, step=0.1)
+    manual_step = c_ph.slider("Кадр времени t (0..24)", 0, 24, 0, step=1)
+
+
     with c_btn:
         st.write("")
         st.write("")
