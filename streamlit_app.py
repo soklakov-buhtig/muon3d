@@ -6,6 +6,8 @@ from constants import DEFAULT_MEDIUM, DEFAULT_GRID, M_E_MEV, M_MU_MEV, R_E_COMPT
 from preprocessor import build_3d_grid, init_hopf_vortex_3d, init_noise_field_3d
 from solution import relax_vortex_3d
 from postprocessor import analyze_relaxed_vortex_3d
+from make_animation import build_vortex_rotation_animation
+
 
 st.set_page_config(page_title="Muon 3D Vortex Solver", layout="wide")
 st.title("3D Soliton Relaxation Solver (dt = τ / 2)")
@@ -79,6 +81,13 @@ if run_vortex:
             renormalize=True,
         )
         obs = analyze_relaxed_vortex_3d(res["psi"], grid, medium, m_tor, n_pol)
+        st.session_state["last_3d_run"] = {
+            "psi": res["psi"],
+            "grid": grid,
+            "m_tor": m_tor,
+            "n_pol": n_pol,
+        }
+
 
     st.subheader(f"Результаты 3D-релаксации ({m_tor}, {n_pol}) | dt = {res['dt']:.3f}")
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -130,3 +139,35 @@ if run_vortex:
         fig_e.add_trace(go.Scatter(x=steps_arr, y=e_tot_arr, mode="lines+markers", name="E_total (МэВ)"))
         fig_e.update_layout(title="Сходимость полной 3D-энергии E(t)", xaxis_title="Шаг", yaxis_title="МэВ", height=430)
         st.plotly_chart(fig_e, use_container_width=True)
+# === Отдельный блок: Фиксация ориентации и 3D-анимация ===
+if "last_3d_run" in st.session_state:
+    st.divider()
+    st.subheader("3D-анимация с фиксацией ориентации и приближения")
+    c_az, c_el, c_zm, c_btn = st.columns([1, 1, 1, 1.3])
+    azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
+    elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
+    zoom_val = c_zm.slider("Приближение (×)", 0.5, 4.0, 1.6, step=0.1)
+
+    with c_btn:
+        st.write("")
+        st.write("")
+        lock_and_animate = st.button("Зафиксировать и запустить анимацию", use_container_width=True)
+
+    if lock_and_animate:
+        st.session_state["anim_camera"] = {
+            "azim": azim_deg,
+            "elev": elev_deg,
+            "zoom": zoom_val,
+        }
+
+    if "anim_camera" in st.session_state:
+        cam = st.session_state["anim_camera"]
+        run_data = st.session_state["last_3d_run"]
+        fig_anim = build_vortex_rotation_animation(
+            run_data["psi"],
+            run_data["grid"],
+            azim_deg=cam["azim"],
+            elev_deg=cam["elev"],
+            zoom=cam["zoom"],
+        )
+        st.plotly_chart(fig_anim, use_container_width=True)
