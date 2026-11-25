@@ -156,7 +156,7 @@ if "last_3d_run" in st.session_state:
     with c_btn:
         st.write("")
         st.write("")
-        lock_and_animate = st.button("Зафиксировать и крутить 360°", use_container_width=True)
+        lock_and_animate = st.button("Зафиксировать и запустить эволюцию по времени°", use_container_width=True)
 
     run_data = st.session_state["last_3d_run"]
     anim_slot = st.empty()
