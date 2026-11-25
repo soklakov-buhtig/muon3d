@@ -80,37 +80,7 @@ def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.
                 up=dict(x=0.0, y=0.0, z=1.0),
             ),
         ),
-        updatemenus=[
-            dict(
-                type="buttons",
-                showactive=False,
-                x=0.02,
-                y=0.05,
-                buttons=[
-                    dict(
-                        label="▶ Старт анимации",
-                        method="animate",
-                        args=[
-                            None,
-                            dict(
-                                frame=dict(duration=60, redraw=False),
-                                transition=dict(duration=0),
-                                fromcurrent=True,
-                                mode="immediate",
-                            ),
-                        ],
-                    ),
-                    dict(
-                        label="⏸ Пауза",
-                        method="animate",
-                        args=[
-                            [None],
-                            dict(
-                                frame=dict(duration=0, redraw=False),
-                                mode="immediate",
-                                transition=dict(duration=0),
-                            ),
-                        ],
+       
                     ),
                 ],
             )
