@@ -1,7 +1,8 @@
 import numpy as np
 import plotly.graph_objects as go
 
-def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36, time_label=""):
+
+def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36, time_label=""):
 
 #def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36):
     """
