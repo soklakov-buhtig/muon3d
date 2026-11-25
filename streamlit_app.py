@@ -8,8 +8,9 @@ from preprocessor import build_3d_grid, init_hopf_vortex_3d, init_noise_field_3d
 from solution import relax_vortex_3d
 from postprocessor import analyze_relaxed_vortex_3d
 #from make_animation import build_vortex_rotation_animation
-from make_animation import build_vortex_time_animation
+#from make_animation import build_vortex_time_animation
 
+from make_animation import build_vortex_time_animation
 
 
 st.set_page_config(page_title="Muon 3D Vortex Solver", layout="wide")
