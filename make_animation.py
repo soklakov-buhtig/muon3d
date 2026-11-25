@@ -44,35 +44,7 @@ def build_vortex_time_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.
     frames = []
     angles = [0.0]
 #    angles = np.linspace(0.0, 2.0 * np.pi, int(n_frames), endpoint=False)
-        if lock_and_animate:
-        import time
-        t_start = time.time()
-        for step_t in range(25):
-            phase_t = 2.0 * np.pi * (step_t / 24.0)
-            elapsed = time.time() - t_start
-            t_str = f"t = {elapsed:.2f} с (фаза {step_t}/24 T)"
-            fig_step = build_vortex_time_animation(
-                run_data["psi"],
-                run_data["grid"],
-                azim_deg=azim_deg,
-                elev_deg=elev_deg,
-                zoom=zoom_val,
-                phase_t=phase_t,
-                time_label=t_str,
-            )
-            anim_slot.plotly_chart(fig_step, use_container_width=True, key=f"anim_t_{step_t}")
-            time.sleep(0.06)
-    else:
-        fig_preview = build_vortex_time_animation(
-            run_data["psi"],
-            run_data["grid"],
-            azim_deg=azim_deg,
-            elev_deg=elev_deg,
-            zoom=zoom_val,
-            phase_t=0.0,
-            time_label="t = 0.00 с (камера зафиксирована)",
-        )
-        anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
+    
 
     for idx, d_az in enumerate(angles):
         az = az0 + d_az
