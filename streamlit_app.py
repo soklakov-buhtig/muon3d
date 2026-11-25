@@ -150,17 +150,22 @@ if run_vortex:
 if "last_3d_run" in st.session_state:
     st.divider()
 
-    c_az, c_el, c_zm, c_ph, c_btn = st.columns([1, 1, 1, 1, 1.4])
+    c_az, c_el, c_zm, c_ph, c_btn1, c_btn2 = st.columns([1, 1, 1, 1, 1.3, 1.1])
     azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
     elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
     zoom_val = c_zm.slider("Приближение (×)", 0.5, 4.0, 1.6, step=0.1)
     manual_step = c_ph.slider("Кадр времени t (0..24)", 0, 24, 0, step=1)
 
+    with c_btn1:
+        st.write("")
+        st.write("")
+        lock_and_animate = st.button("Запустить эволюцию (3D)", use_container_width=True)
 
-    with c_btn:
+    with c_btn2:
         st.write("")
         st.write("")
-        lock_and_animate = st.button("Зафиксировать и запустить эволюцию по времени°", use_container_width=True)
+        make_snapshots = st.button("Snapshot History", use_container_width=True)
+
 
     run_data = st.session_state["last_3d_run"]
     anim_slot = st.empty()
