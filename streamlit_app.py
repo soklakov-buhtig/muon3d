@@ -187,7 +187,8 @@ if "last_3d_run" in st.session_state:
             azim_deg=azim_deg,
             elev_deg=elev_deg,
             zoom=zoom_val,
-            phase_t=0.0,
+    #        phase_t=0.0,
+            phase_t=2.0 * np.pi * (manual_step / 24.0),
             time_label="t = 0.00 с (камера зафиксирована)",
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
