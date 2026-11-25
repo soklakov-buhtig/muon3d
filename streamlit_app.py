@@ -199,3 +199,26 @@ if "last_3d_run" in st.session_state:
             time_label="t = 0.00 с (камера зафиксирована)",
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
+    if make_snapshots:
+        with st.spinner("Генерация растровой последовательности Snapshot History..."):
+            snaps = build_snapshot_history_pngs(
+                run_data["psi"],
+                run_data["grid"],
+                azim_deg=azim_deg,
+                elev_deg=elev_deg,
+                zoom=zoom_val,
+                n_frames=16,
+            )
+            st.session_state["snapshot_history"] = snaps
+
+    if "snapshot_history" in st.session_state:
+        snaps = st.session_state["snapshot_history"]
+        st.subheader(f"Snapshot History ({len(snaps)} растровых PNG-кадров, камера зафиксирована)")
+        snap_idx = st.slider("Просмотр растрового кадра", 1, len(snaps), 1, step=1)
+        st.image(snaps[snap_idx - 1], use_container_width=False)
+        st.download_button(
+            label=f"Скачать текущий PNG-кадр #{snap_idx}",
+            data=snaps[snap_idx - 1],
+            file_name=f"vortex_snapshot_{snap_idx:02d}.png",
+            mime="image/png",
+        )
