@@ -202,37 +202,22 @@ if "last_3d_run" in st.session_state:
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
     if make_snapshots:
-        with st.spinner("Генерация растровой последовательности Snapshot History..."):
-            snaps = build_snapshot_history_pngs(
+        with st.spinner("Сборка GIF-анимации..."):
+            st.session_state["vortex_gif"] = build_vortex_gif(
                 run_data["psi"],
                 run_data["grid"],
                 azim_deg=azim_deg,
                 elev_deg=elev_deg,
                 zoom=zoom_val,
-                n_frames=160,
+                n_frames=n_snap_frames,
             )
-            st.session_state["snapshot_history"] = snaps
 
-    if "snapshot_history" in st.session_state:
-        snaps = st.session_state["snapshot_history"]
-        st.subheader(f"Snapshot History ({len(snaps)} растровых PNG-кадров, камера зафиксирована)")
-        snap_idx = st.slider("Просмотр растрового кадра", 1, len(snaps), 1, step=1)
-        snap_slot = st.empty()
-
-        col_dl, col_play = st.columns([1, 1.2])
-        col_dl.download_button(
-            label=f"Скачать текущий PNG-кадр #{snap_idx}",
-            data=snaps[snap_idx - 1],
-            file_name=f"vortex_snapshot_{snap_idx:02d}.png",
-            mime="image/png",
-            use_container_width=True,
+    if "vortex_gif" in st.session_state:
+        gif_bytes = st.session_state["vortex_gif"]
+        st.image(gif_bytes)
+        st.download_button(
+            label="Скачать GIF-анимацию",
+            data=gif_bytes,
+            file_name="vortex_evolution.gif",
+            mime="image/gif",
         )
-        play_snaps = col_play.button("Запустить анимацию истории снэпшотов", use_container_width=True)
-
-        if play_snaps:
-            import time
-            for frame_bytes in snaps:
-                snap_slot.image(frame_bytes, use_container_width=False)
-                time.sleep(0.08)
-        else:
-            snap_slot.image(snaps[snap_idx - 1], use_container_width=False)
