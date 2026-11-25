@@ -1,0 +1,113 @@
+import numpy as np
+import plotly.graph_objects as go
+
+
+def build_vortex_rotation_animation(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames=36):
+    """
+    Создаёт интерактивную 3D-анимацию вращения релаксированного узла
+    с фиксацией выбранного начального ракурса (азимут, угол места и приближение).
+    """
+    u_field = np.abs(psi) ** 2
+    u_max = float(np.max(u_field))
+    if u_max <= 0:
+        u_max = 1.0
+
+    X_flat = grid["X"].flatten()
+    Y_flat = grid["Y"].flatten()
+    Z_flat = grid["Z"].flatten()
+    V_flat = u_field.flatten()
+
+    # Перевод углов камеры и зума в координаты Plotly scene.camera.eye
+    r_cam = 2.6 / max(float(zoom), 0.2)
+    az0 = np.radians(float(azim_deg))
+    el0 = np.radians(float(elev_deg))
+
+    eye_x0 = r_cam * np.cos(el0) * np.cos(az0)
+    eye_y0 = r_cam * np.cos(el0) * np.sin(az0)
+    eye_z0 = r_cam * np.sin(el0)
+
+    # Базовый кадр (фиксированный ракурс и приближение)
+    base_trace = go.Isosurface(
+        x=X_flat,
+        y=Y_flat,
+        z=Z_flat,
+        value=V_flat,
+        isomin=0.25 * u_max,
+        isomax=0.85 * u_max,
+        surface_count=3,
+        colorscale="Turbo",
+        opacity=0.70,
+        caps=dict(x_show=False, y_show=False, z_show=False),
+    )
+
+    # Генерация кадров плавного облёта вокруг зафиксированного ракурса и зума
+    frames = []
+    angles = np.linspace(0.0, 2.0 * np.pi, int(n_frames), endpoint=False)
+    for idx, d_az in enumerate(angles):
+        az = az0 + d_az
+        ex = r_cam * np.cos(el0) * np.cos(az)
+        ey = r_cam * np.cos(el0) * np.sin(az)
+        ez = eye_z0
+        frames.append(
+            go.Frame(
+                name=f"f_{idx}",
+                layout=dict(
+                    scene=dict(
+                        camera=dict(
+                            eye=dict(x=float(ex), y=float(ey), z=float(ez)),
+                            up=dict(x=0.0, y=0.0, z=1.0),
+                        )
+                    )
+                ),
+            )
+        )
+
+    fig = go.Figure(data=[base_trace], frames=frames)
+    fig.update_layout(
+        title=f"3D-анимация узла (ракурс: {azim_deg:.0f}°, наклон: {elev_deg:.0f}°, зум: {zoom:.1f}×)",
+        height=560,
+        margin=dict(l=0, r=0, t=45, b=0),
+        scene=dict(
+            aspectmode="data",
+            camera=dict(
+                eye=dict(x=float(eye_x0), y=float(eye_y0), z=float(eye_z0)),
+                up=dict(x=0.0, y=0.0, z=1.0),
+            ),
+        ),
+        updatemenus=[
+            dict(
+                type="buttons",
+                showactive=False,
+                x=0.02,
+                y=0.05,
+                buttons=[
+                    dict(
+                        label="▶ Старт анимации",
+                        method="animate",
+                        args=[
+                            None,
+                            dict(
+                                frame=dict(duration=60, redraw=False),
+                                transition=dict(duration=0),
+                                fromcurrent=True,
+                                mode="immediate",
+                            ),
+                        ],
+                    ),
+                    dict(
+                        label="⏸ Пауза",
+                        method="animate",
+                        args=[
+                            [None],
+                            dict(
+                                frame=dict(duration=0, redraw=False),
+                                mode="immediate",
+                                transition=dict(duration=0),
+                            ),
+                        ],
+                    ),
+                ],
+            )
+        ],
+    )
+    return fig
