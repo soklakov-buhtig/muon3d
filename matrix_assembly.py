@@ -115,7 +115,9 @@ def evaluate_energy_and_gradient(psi, grid, medium, use_mask=True):
     E_total = E1 + E2 + E3 + E4
 
     # Полный вариационный градиент dE / d(psi*) с учётом граничной маски open BC
-    dE_dpsi = (grad_e1 + grad_e2 + grad_e3 + grad_e4) * mask
+#    dE_dpsi = (grad_e1 + grad_e2 + grad_e3 + grad_e4) * mask
+    dE_dpsi = (grad_e1 + grad_e2 + grad_e3 + grad_e4) * (mask if use_mask else 1.0)
+
 
     energies = {
         "E_total": E_total,
