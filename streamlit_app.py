@@ -237,6 +237,8 @@ if run_vortex:
 if "last_3d_run" in st.session_state:
     st.divider()
 
+
+
 c_az, c_el, c_zm, c_ph, c_btn1, c_btn2, c_btn3 = st.columns([1, 1, 1, 1, 1.2, 1.0, 1.1])
 azim_deg = c_az.slider("Азимут (°)", 0, 360, 45, step=5)
 elev_deg = c_el.slider("Наклон (°)", -85, 85, 25, step=5)
@@ -258,6 +260,35 @@ with c_btn3:
     st.write("")
     make_6_gifs = st.button("GIF для 6 частиц", width="stretch")
 
+anim_slot = st.empty()
+
+if "last_3d_run" in st.session_state:
+    run_data = st.session_state["last_3d_run"]
+    if lock_and_animate:
+        import time
+        t_start = time.time()
+        for step_t in range(25):
+            phase_t = 2.0 * np.pi * (step_t / 24.0)
+            elapsed = time.time() - t_start
+            t_str = f"t = {elapsed:.2f} с (фаза {step_t}/24 T)"
+            fig_step = build_vortex_time_animation(
+                run_data["psi"], run_data["grid"],
+                azim_deg=azim_deg, elev_deg=elev_deg,
+                zoom=zoom_val, phase_t=phase_t, time_label=t_str,
+            )
+            anim_slot.plotly_chart(fig_step, width="stretch", key=f"anim_t_{step_t}")
+            time.sleep(0.06)
+    else:
+        fig_preview = build_vortex_time_animation(
+            run_data["psi"], run_data["grid"],
+            azim_deg=azim_deg, elev_deg=elev_deg,
+            zoom=zoom_val,
+            phase_t=2.0 * np.pi * (manual_step / 24.0),
+            time_label="t = 0.00 с (камера зафиксирована)",
+        )
+        anim_slot.plotly_chart(fig_preview, width="stretch", key="anim_preview")
+elif lock_and_animate or make_snapshots:
+    st.warning("Сначала запустите 3D-релаксацию узла или нажмите «GIF для 6 частиц».")
 
 
     run_data = st.session_state["last_3d_run"]
