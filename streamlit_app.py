@@ -101,7 +101,14 @@ if run_noise:
     with st.spinner("Запуск Теста №1 (релаксация малого шума вокруг ψ = 0)..."):
         grid = build_3d_grid(R0_init, N=N_grid, box_scale=box_scale)
         psi_noise = init_noise_field_3d(grid, noise_amp=1e-3)
-        res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
+ #       res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
+        res = relax_vortex_3d(
+            psi0, grid, medium,
+            max_steps=max_steps,
+            renormalize=False,
+            damping_coeff=0.02,
+        )
+
 #        E_start = res["history"]["E_total"]
         E_start = res["history"][0]["E_total"]
 
