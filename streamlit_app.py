@@ -3,8 +3,13 @@ import numpy as np
 import plotly.graph_objects as go
 
 #from calibrate_medium import calibrate_single_and_scan_spectrum
-from calibrate_medium import calibrate_single_and_scan_spectrum, cross_calibrate_all_particles
+#from calibrate_medium import calibrate_single_and_scan_spectrum, cross_calibrate_all_particles
 
+from calibrate_medium import (
+    calibrate_single_and_scan_spectrum,
+    cross_calibrate_all_particles,
+    FOUND_PARTICLES_BENCHMARK,
+)
 
 
 from constants import DEFAULT_MEDIUM, DEFAULT_GRID, M_E_MEV, M_MU_MEV, R_E_COMPTON_FM, R_MU_COMPTON_FM
