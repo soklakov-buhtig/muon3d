@@ -56,8 +56,11 @@ def measure_winding_numbers_3d(psi, grid, R0_est_fm, m_target, n_target):
 #    n_ok = (n_meas >= 0.35 * abs(n_t)) and (n_meas <= 1.5 * abs(n_t)) and (n_meas * n_t >= 0)
 #    m_ok = (m_meas >= 0.35 * abs(m_t)) and (m_meas <= 1.5 * abs(m_t)) and (m_meas * m_t >= 0)
 #    n_ok = (n_meas >= 0.05 * abs(n_t)) and (n_meas <= 1.5 * abs(n_t)) and (n_meas * n_t >= 0)
-    m_ok = (m_meas >= 0.12 * abs(m_t)) and (m_meas <= 1.5 * abs(m_t)) and (m_meas * m_t >= 0)
-    n_ok = (n_meas >= 0.03 * abs(n_t)) and (n_meas <= 1.5 * abs(n_t)) and (n_meas * n_t >= 0)
+#    m_ok = (m_meas >= 0.12 * abs(m_t)) and (m_meas <= 1.5 * abs(m_t)) and (m_meas * m_t >= 0)
+#    n_ok = (n_meas >= 0.03 * abs(n_t)) and (n_meas <= 1.5 * abs(n_t)) and (n_meas * n_t >= 0)
+    m_ok = (m_meas >= 0.45 * abs(m_t)) and (m_meas <= 1.45 * abs(m_t)) and (m_meas * m_t >= 0)
+    n_ok = (n_meas >= 0.15 * abs(n_t)) and (n_meas <= 1.45 * abs(n_t)) and (n_meas * n_t >= 0)
+
 
 
 #    m_ok = (abs(m_meas - m_t) <= max(0.6, 0.35 * abs(m_t))) and (m_meas * m_t >= 0)
