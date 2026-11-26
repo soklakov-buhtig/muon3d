@@ -23,6 +23,10 @@ def relax_vortex_3d(
     target_amp=1.0,
     norm_interval=1,
     damping_coeff=0.02,
+    bc_mode="confined",
+    record_frames=0,
+    stop_on_buckling=True,
+
 ):
     """
     Релаксация 3D-поля psi(x, y, z) по схеме leapfrog + вязкость с шагом dt = tau / 2.
