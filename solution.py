@@ -100,6 +100,8 @@ def relax_vortex_3d(
 
         psi_old = psi
         psi = psi_new
+        if int(record_frames) > 0 and (step % snap_every == 0) and len(psi_frames) < int(record_frames):
+            psi_frames.append(psi.copy())
 
         energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium)
         cur_E = energies["E_total"]
