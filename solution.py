@@ -1,6 +1,7 @@
 import numpy as np
 from matrix_assembly import evaluate_energy_and_gradient
 
+
 def _apply_sommerfeld_bc(psi_new, psi_prev, cfl_c=0.45):
     """Излучающие граничные условия Зоммерфельда 1-го порядка на 6 гранях куба."""
     r = float(cfl_c)
@@ -26,13 +27,15 @@ def relax_vortex_3d(
     bc_mode="confined",
     record_frames=0,
     stop_on_buckling=True,
-
 ):
     """
     Релаксация 3D-поля psi(x, y, z) по схеме leapfrog + вязкость с шагом dt = tau / 2.
     """
     tau = float(medium.get("tau", 1.0))
-    dt = 0.5 * tau  # Критическое условие устойчивости: dt = tau / 2
+    dt = 0.5 * tau
+    damping = float(damping_coeff)
+    use_mask = (bc_mode == "confined")
+
     damping = float(damping_coeff)
 
 
