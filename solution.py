@@ -114,18 +114,19 @@ def relax_vortex_3d(
         energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium, use_mask=use_mask)
         cur_E = energies["E_total"]
         # ... (основной цикл расчёта с проверками сходимости и энергии)
+        if step % 10 == 0 or step == max_steps:
+            history.append({
+                "step": step, "E_total": cur_E,
+                "E1": energies["E1"], "E2": energies["E2"],
+                "E3": energies["E3"], "E4": energies["E4"],
+                "max_amp": float(np.max(np.abs(psi))),
+            })
 
-        dynamically_stable = bool(...)
-        return {
-            "psi": psi,
-            "energies": energies,
-            "history": history,
-            "converged": dynamically_stable,
-            "dynamically_stable": dynamically_stable,
-            "buckling_ok": not buckling_broken,
-            "amp_ratio": amp_ratio,
-            "steps_done": step,
-            "dt": dt,
-            "tau": tau,
-            "psi_frames": psi_frames, # Добавлен недостающий ключ
-        }
+        if not np.isfinite(cur_E):
+            break
+        if stop_on_buckling and not energies.get("buckling_ok", True):
+            buckling_broken = True
+            break
+        if stop_on_buckling and float(np.max(np.abs(psi))) < 1e-4:
+            break
+        prev_E = cur_E
