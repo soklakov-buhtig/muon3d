@@ -149,15 +149,15 @@ if run_vortex:
 
     # Тест №2: Сохранение топологии
     topo = obs["topology"]
+    
     if topo["topology_preserved"]:
         st.success(f"Тест №2 (топология сохранена): измерено ({topo['m_measured']:.2f}, {topo['n_measured']:.2f}) ≈ ({m_tor}, {n_pol})")
     else:
         st.warning(f"Тест №2 (дрейф топологии): измерено ({topo['m_measured']:.2f}, {topo['n_measured']:.2f}) при цели ({m_tor}, {n_pol}) — попробуйте крупнее сетку N³.")
-        if obs.get("buckling_ok", True) and res.get("dynamically_stable", True):
+    if obs.get("buckling_ok", True) and res.get("dynamically_stable", True):
         st.success(f"Динамика и buckling пройдены: chi_max = {obs.get('chi_max', 0.0):.4f} < 1.0, amp_ratio = {res.get('amp_ratio', 1.0):.3f}")
-        else:
-            st.error(f"Потеря устойчивости: buckling_ok={obs.get('buckling_ok')}, chi_max={obs.get('chi_max', 0.0):.4f}, amp_ratio={res.get('amp_ratio', 1.0):.3f}")
-
+    else:
+        st.error(f"Потеря устойчивости: buckling_ok={obs.get('buckling_ok')}, chi_max={obs.get('chi_max', 0.0):.4f}, amp_ratio={res.get('amp_ratio', 1.0):.3f}")
 
     st.write(
         f"**Энергии (МэВ):** `E_total = {obs['energies']['E_total']:.4f}` | "
