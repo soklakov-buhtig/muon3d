@@ -36,7 +36,7 @@ def compute_medium_fields(psi, medium):
     return u, n_eff, dn_du
 
 
-def evaluate_energy_and_gradient(psi, grid, medium):
+def evaluate_energy_and_gradient(psi, grid, medium, use_mask=True):
     """
     Вычисляет полную 3D-энергию E[psi] (E1 + E2 + E3 + E4 в МэВ)
     и точную вариационную производную dE / d(psi*) для шага leapfrog.
