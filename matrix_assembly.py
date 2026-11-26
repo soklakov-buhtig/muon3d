@@ -77,9 +77,12 @@ def evaluate_energy_and_gradient(psi, grid, medium):
 
     # === E3: Кручение и сдвиговое прощёлкивание (через плотность тока J = Im(psi* grad psi)) ===
     jx = np.imag(np.conj(psi) * gx)
-    jy = np.imag(np.conj(psi) * gy)
-    jz = np.imag(np.conj(psi) * gz)
+    alias_scale = float(grid.get("alias_scale", 1.0))
+    jx = np.imag(np.conj(psi) * gx) * alias_scale
+    jy = np.imag(np.conj(psi) * gy) * alias_scale
+    jz = np.imag(np.conj(psi) * gz) * alias_scale
     j_sq = jx**2 + jy**2 + jz**2
+
 
 #    chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2)
     chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2) / (1.0 + delta * u)
