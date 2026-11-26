@@ -104,6 +104,9 @@ def analyze_relaxed_vortex_3d(psi, grid, medium, m_tor, n_pol):
 
     # Полная масса солитона из 3D-интеграла энергии (МэВ)
     mass_mev = float(abs(energies["E_total"]))
+    chi_max = float(energies.get("chi_max", 0.0))
+    buckling_ok = bool(energies.get("buckling_ok", True))
+    particle_survived = bool(buckling_ok and topo["topology_preserved"] and (mass_mev > 0.0))
 
     return {
         "mass_mev": mass_mev,
@@ -114,5 +117,9 @@ def analyze_relaxed_vortex_3d(psi, grid, medium, m_tor, n_pol):
         "n_eff_max": n_eff_max,
         "n_eff_mean": n_eff_mean,
         "g_factor": float(g_factor),
+        "chi_max": chi_max,
+        "buckling_ok": buckling_ok,
+        "particle_survived": particle_survived,
         "topology": topo,
     }
+
