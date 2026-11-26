@@ -208,3 +208,27 @@ def cross_calibrate_all_particles(
     keys = ["alpha_nl", "gamma_nl", "beta_nl", "eta_visc", "delta_pack"]
     x0 = np.log10([max(float(base_medium[k]), 1e-6) for k in keys])
     results = []
+    for name, (m_p, n_p), m_target, r_target in particles:
+        scale_r = (2.0 * 3.0) / max(float(m_p * n_p), 1.0)
+        r0_guess = R_E_COMPTON_FM * scale_r
+        best_p = {"loss": float("inf"), "medium": dict(base_medium), "obs": None}
+
+        def p_loss(log_params):
+            low_b = np.array([-4.0, -3.0, -3.5, -3.0, -4.0])
+            high_b = np.array([1.5, 2.0, 0.0, -1.6, 1.5])
+            vals = 10.0 ** np.clip(log_params, low_b, high_b)
+            med = dict(base_medium)
+            for k, v in zip(keys, vals):
+                med[k] = float(v)
+            res_p = evaluate_single_vortex_dynamics(
+                m_p, n_p, med, R0_init=r0_guess, N_grid=N_grid, dyn_steps=dyn_steps
+            )
+            m_est = res_p["mass_mev"]
+            if not np.isfinite(m_est) or m_est <= 0:
+                return 1e6
+            pen = 0.0 if res_p["buckling_ok"] else 50.0
+            pen += 0.0 if res_p["dynamically_stable"] else 30.0
+            err = (np.log10(m_est / float(m_target))) ** 2 + pen
+            if err < best_p["loss"]:
+                best_p.update({"loss": float(err), "medium": med, "obs": res_p})
+            return float(err)
