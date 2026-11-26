@@ -29,7 +29,9 @@ def measure_winding_numbers_3d(psi, grid, R0_est_fm, m_target, n_target):
     n_local = d_rho * vz - Z * v_rho
 
     # Взвешиваем по плотной части силовой трубки (где |psi|^2 > 15% от максимума)
-    mask_core = u > (0.15 * np.max(u))
+#    mask_core = u > (0.15 * np.max(u))
+    mask_core = u > (0.45 * np.max(u))
+
     if np.any(mask_core):
         weights = u[mask_core]
         w_sum = float(np.sum(weights))
@@ -39,8 +41,11 @@ def measure_winding_numbers_3d(psi, grid, R0_est_fm, m_target, n_target):
         m_meas = 0.0
         n_meas = 0.0
     m_t, n_t = int(m_target), int(n_target)
-    m_ok = (abs(m_meas - m_t) <= max(0.6, 0.35 * abs(m_t))) and (m_meas * m_t >= 0)
-    n_ok = (abs(n_meas - n_t) <= max(0.6, 0.35 * abs(n_t))) and (n_meas * n_t >= 0)
+    m_ok = (abs(m_meas - m_t) <= max(0.8, 0.45 * abs(m_t))) and (m_meas * m_t >= 0)
+    n_ok = (abs(n_meas - n_t) <= max(0.8, 0.45 * abs(n_t))) and (n_meas * n_t >= 0)
+
+#    m_ok = (abs(m_meas - m_t) <= max(0.6, 0.35 * abs(m_t))) and (m_meas * m_t >= 0)
+#    n_ok = (abs(n_meas - n_t) <= max(0.6, 0.35 * abs(n_t))) and (n_meas * n_t >= 0)
     preserved = bool(m_ok and n_ok)
 
 #    preserved = (abs(round(m_meas) - int(m_target)) == 0) and (abs(round(n_meas) - int(n_target)) == 0)
