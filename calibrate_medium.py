@@ -186,3 +186,25 @@ def calibrate_single_and_scan_spectrum(
 
     best_state["spectrum"] = spectrum
     return best_state
+FOUND_PARTICLES_BENCHMARK = [
+    ("Электрон (e⁻)", (2, 3), 0.511, 386.16),
+    ("Мюон (μ⁻)", (19, 31), 105.66, 1.87),
+    ("Пион (π⁰)", (21, 34), 134.98, 1.46),
+    ("Каон (K±)", (27, 43), 493.68, 0.40),
+    ("Эта-мезон (η)", (21, 34), 547.86, 0.36),
+    ("Ро/Омега (ρ/ω)", (29, 47), 775.26, 0.25),
+]
+
+
+def cross_calibrate_all_particles(
+    base_medium,
+    particles=None,
+    N_grid=32,
+    dyn_steps=110,
+    max_iter=35,
+):
+    if particles is None:
+        particles = FOUND_PARTICLES_BENCHMARK
+    keys = ["alpha_nl", "gamma_nl", "beta_nl", "eta_visc", "delta_pack"]
+    x0 = np.log10([max(float(base_medium[k]), 1e-6) for k in keys])
+    results = []
