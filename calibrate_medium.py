@@ -242,7 +242,7 @@ def cross_calibrate_all_particles(
             options={"maxiter": max(int(max_iter), 65), "xatol": 1e-4, "fatol": 1e-5},
         )
 
-        )
+    
         m_found = best_p["obs"]["mass_mev"] if best_p["obs"] else 0.0
         err_pct = abs(m_found - float(m_target)) / float(m_target) * 100.0
         med_f = best_p["medium"]
