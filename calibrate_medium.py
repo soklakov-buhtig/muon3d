@@ -63,3 +63,29 @@ def evaluate_single_vortex_dynamics(
         "g_factor": float(obs["g_factor"]),
         "steps_done": int(res["steps_done"]),
     }
+def calibrate_single_and_scan_spectrum(
+    base_medium,
+    base_topo=(2, 3),
+    topo_sequence=None,
+    N_grid=32,
+    dyn_steps=140,
+    max_iter=35,
+):
+    """
+    1) Настраивает параметры среды на одном младшем узле base_topo
+       с обязательным прохождением buckling и динамической устойчивости.
+    2) Последовательно проверяет в этой среде ряд узлов по одному.
+    """
+    if topo_sequence is None:
+        topo_sequence = DEFAULT_TOPO_SEQUENCE
+
+    m_base, n_base = int(base_topo[0]), int(base_topo[1])
+    keys = ["alpha_nl", "gamma_nl", "beta_nl", "eta_visc", "delta_pack"]
+    x0 = np.log10([max(float(base_medium[k]), 1e-6) for k in keys])
+
+    best_state = {
+        "loss": float("inf"),
+        "medium": dict(base_medium),
+        "base_result": None,
+        "spectrum": [],
+    }
