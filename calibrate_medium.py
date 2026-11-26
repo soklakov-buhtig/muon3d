@@ -17,8 +17,26 @@ DEFAULT_TOPO_SEQUENCE = [
     (2, 5),
     (3, 5),
     (5, 8),
+    (7, 11),
+    (8, 13),
+    (11, 17),
+    (13, 21),
+    (17, 29),
+    (21, 34),
     (37, 73),
+    (73, 37),
+    (34, 55),
+    (41, 79),
+    (47, 89),
+    (55, 89),
+    (61, 113),
+    (73, 137),
+    (89, 144),
+    (97, 181),
+    (113, 211),
+    (144, 233),    
 ]
+
 def evaluate_single_vortex_dynamics(
     m_tor,
     n_pol,
@@ -90,8 +108,9 @@ def calibrate_single_and_scan_spectrum(
         "spectrum": [],
     }
     def loss_fn(log_params):
-        low_b = np.array([-4.0, -3.0, -3.5, -2.5, -4.0])
-        high_b = np.array([1.5, 2.0, 1.0, 1.0, 1.5])
+        low_b = np.array([-4.0, -3.0, -3.5, -3.0, -4.0])
+        high_b = np.array([1.5, 2.0, 0.5, -0.6, 1.5])
+
         vals = 10.0 ** np.clip(log_params, low_b, high_b)
         med = dict(base_medium)
         for k, v in zip(keys, vals):
@@ -128,7 +147,8 @@ def calibrate_single_and_scan_spectrum(
     spectrum = []
     for (m_i, n_i) in topo_sequence:
         scale_r = (2.0 * 3.0) / max(float(m_i * n_i), 1.0)
-        r0_guess = R_E_COMPTON_FM * (scale_r ** 1.5)
+        r0_guess = R_E_COMPTON_FM * scale_r
+
         item = evaluate_single_vortex_dynamics(
             m_i, n_i, best_med, R0_init=r0_guess, N_grid=N_grid, dyn_steps=dyn_steps
         )
