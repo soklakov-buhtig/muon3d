@@ -128,7 +128,7 @@ if run_vortex:
             max_steps=max_steps,
             norm_interval=1,
             tol_energy=DEFAULT_GRID["tol_energy"],
-            renormalize=True,
+            renormalize=False,
         )
         obs = analyze_relaxed_vortex_3d(res["psi"], grid, medium, m_tor, n_pol)
         st.session_state["last_3d_run"] = {
