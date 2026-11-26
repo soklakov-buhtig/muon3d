@@ -104,12 +104,8 @@ if run_noise:
         psi_noise = init_noise_field_3d(grid, noise_amp=1e-3)
  #       res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
 
-        res = relax_vortex_3d(
-            psi0, grid, medium,
-            max_steps=max_steps,
-            renormalize=False,
-            damping_coeff=0.02,
-        )
+        res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
+
 
 
 #        E_start = res["history"]["E_total"]
