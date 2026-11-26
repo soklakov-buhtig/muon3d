@@ -63,7 +63,8 @@ def evaluate_single_vortex_dynamics(
     R0_init=R_E_COMPTON_FM,
     N_grid=32,
     dyn_steps=160,
-    max_N=68,
+#    max_N=68,
+    max_N=40,
 ):
     N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), int(max_N))
 
@@ -196,6 +197,7 @@ def cross_calibrate_all_particles(
     N_grid=32,
     dyn_steps=110,
     max_iter=35,
+    progress_callback=None,
 ):
     if particles is None:
         particles = FOUND_PARTICLES_BENCHMARK
