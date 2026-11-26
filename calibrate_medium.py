@@ -56,8 +56,6 @@ DEFAULT_TOPO_SEQUENCE = [
     (144, 233),
 ]
 
-
-
 def evaluate_single_vortex_dynamics(
     m_tor,
     n_pol,
@@ -65,14 +63,10 @@ def evaluate_single_vortex_dynamics(
     R0_init=R_E_COMPTON_FM,
     N_grid=32,
     dyn_steps=160,
+    max_N=68,
 ):
-    """
-    Запускает 3D-динамику для одного узла (m_tor, n_pol) в заданной среде
-    и проверяет прохождение buckling и динамическую устойчивость.
-    """
-#    grid = build_3d_grid(R0_init, N=N_grid, box_scale=3.2)
-#    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 56)
-    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 68)
+    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), int(max_N))
+
 
     grid = build_3d_grid(R0_init, N=N_eff, box_scale=3.2)
 
