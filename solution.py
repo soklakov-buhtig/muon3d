@@ -1,16 +1,16 @@
 import numpy as np
 from matrix_assembly import evaluate_energy_and_gradient
 
-
 def relax_vortex_3d(
     psi_init,
     grid,
     medium,
     max_steps=600,
     tol_energy=1e-6,
-    renormalize=True,
+    renormalize=False,
     target_amp=1.0,
-    norm_interval=5,
+    norm_interval=1,
+    damping_coeff=0.02,
 ):
     """
     Релаксация 3D-поля psi(x, y, z) по схеме leapfrog + вязкость с шагом dt = tau / 2.
