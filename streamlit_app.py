@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 
+from calibrate_medium import calibrate_medium_3d
 
 from constants import DEFAULT_MEDIUM, DEFAULT_GRID, M_E_MEV, M_MU_MEV, R_E_COMPTON_FM, R_MU_COMPTON_FM
 from preprocessor import build_3d_grid, init_hopf_vortex_3d, init_noise_field_3d
