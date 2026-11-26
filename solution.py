@@ -120,7 +120,9 @@ def relax_vortex_3d(
         (not buckling_broken)
         and np.isfinite(cur_E)
         and (abs(cur_E) > 1e-4)
-        and (0.05 <= norm_ratio <= 10.0)
+#        and (0.05 <= norm_ratio <= 10.0)
+        and (1e-4 <= norm_ratio <= 20.0)
+
         and (step == int(max_steps))
     )
 
