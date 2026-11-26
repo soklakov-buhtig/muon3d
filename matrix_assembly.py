@@ -84,6 +84,9 @@ def evaluate_energy_and_gradient(psi, grid, medium):
     chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2)
     buckling_rel = 1.0 + (chi_local ** 3) / (1.0 + delta * (chi_local ** 3))
     torsion_scale = beta * HBAR_C_MEV_FM * (R_CORE_VAC_FM ** 2)
+    chi_max = float(np.max(chi_local))
+    buckling_ok = bool(chi_max < 1.0)
+
     dens_e3 = torsion_scale * j_sq / buckling_rel
 
     # Вариационный вклад кручения через ток: -i * div(2 * torsion_eff * J * psi)
