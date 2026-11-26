@@ -61,7 +61,10 @@ def evaluate_single_vortex_dynamics(
     Запускает 3D-динамику для одного узла (m_tor, n_pol) в заданной среде
     и проверяет прохождение buckling и динамическую устойчивость.
     """
-    grid = build_3d_grid(R0_init, N=N_grid, box_scale=3.2)
+#    grid = build_3d_grid(R0_init, N=N_grid, box_scale=3.2)
+    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 56)
+    grid = build_3d_grid(R0_init, N=N_eff, box_scale=3.2)
+
     psi0 = init_hopf_vortex_3d(grid, R0_init, R0_init * 0.30, int(m_tor), int(n_pol))
     res = relax_vortex_3d(
         psi0,
