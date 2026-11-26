@@ -359,9 +359,28 @@ if make_6_gifs:
         psi0_p = init_hopf_vortex_3d(grid_p, r0_p, r0_p * 0.30, int(m_p), int(n_p))
         med_p = cross_media.get(p_name, medium)
 
+        res_p = relax_vortex_3d(
+            psi0_p, grid_p, med_p,
+            max_steps=min(int(max_steps), 150),
+            renormalize=False,
+            damping_coeff=0.0 if is_radiative else 0.02,
+            bc_mode="radiative" if is_radiative else "confined",
+            record_frames=int(n_snap_frames) if is_radiative else 0,
+            stop_on_buckling=not is_radiative,
+        )
+        if is_radiative and len(res_p.get("psi_frames", [])) >= 2:
+            gif_b = build_vortex_evolution_gif(
+                res_p["psi_frames"], grid_p,
+                azim_deg=azim_deg, elev_deg=elev_deg, zoom=zoom_val,
+            )
+        else:
+            gif_b = build_vortex_gif(
+                res_p["psi"], grid_p,
+                azim_deg=azim_deg, elev_deg=elev_deg,
+                zoom=zoom_val, n_frames=int(n_snap_frames),
+            )
+        gifs_6.append((p_name, f"({m_p}, {n_p})", gif_b))
 
-    # Запуск расчета 6 гифок с переключением между режимом 'confined' и 'radiative'
-    # (см. детали логики генерации в исходных скриптах проекта)
 
 
 if "vortex_gifs_6" in st.session_state:
