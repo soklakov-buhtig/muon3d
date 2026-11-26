@@ -71,6 +71,10 @@ def analyze_relaxed_vortex_3d(psi, grid, medium, m_tor, n_pol):
             "n_eff_max": 1.0,
             "n_eff_mean": 1.0,
             "g_factor": 2.0,
+            "chi_max": 0.0,
+            "buckling_ok": False,
+            "particle_survived": False,
+
             "topology": {
                 "m_measured": 0.0,
                 "n_measured": 0.0,
