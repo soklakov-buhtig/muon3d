@@ -47,7 +47,7 @@ def relax_vortex_3d(
 
     prev_E = energies["E_total"]
     converged = False
-
+    buckling_broken = False
     for step in range(1, int(max_steps) + 1):
         max_grad = float(np.max(np.abs(dE_dpsi)))
 #        cfl_scale = 0.05 / max(max_grad, 1e-12)
