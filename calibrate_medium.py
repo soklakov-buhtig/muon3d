@@ -159,7 +159,8 @@ def calibrate_single_and_scan_spectrum(
             )
         return total_loss
 
-    minimize(loss_fn, x0, method="Nelder-Mead", options={"maxiter": int(max_iter), "xatol": 1e-3, "fatol": 1e-4})
+  #  minimize(loss_fn, x0, method="Nelder-Mead", options={"maxiter": int(max_iter), "xatol": 1e-3, "fatol": 1e-4})
+    minimize(loss_fn, x0, method="Nelder-Mead", options={"maxiter": max(int(max_iter), 60), "xatol": 1e-4, "fatol": 1e-5})
 
     best_med = best_state["medium"]
     spectrum = []
