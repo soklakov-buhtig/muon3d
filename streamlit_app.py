@@ -210,7 +210,7 @@ if "last_3d_run" in st.session_state:
                 azim_deg=azim_deg,
                 elev_deg=elev_deg,
                 zoom=zoom_val,
-                n_frames=n_snap_frames,
+                n_frames=int(n_snap_frames),
             )
 
     if "vortex_gif" in st.session_state:
