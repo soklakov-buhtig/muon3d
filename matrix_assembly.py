@@ -81,7 +81,9 @@ def evaluate_energy_and_gradient(psi, grid, medium):
     jz = np.imag(np.conj(psi) * gz)
     j_sq = jx**2 + jy**2 + jz**2
 
-    chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2)
+#    chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2)
+    chi_local = eta * np.sqrt(j_sq + 1e-16) * (R_CORE_VAC_FM ** 2) / (1.0 + delta * u)
+
     buckling_rel = 1.0 + (chi_local ** 3) / (1.0 + delta * (chi_local ** 3))
     torsion_scale = beta * HBAR_C_MEV_FM * (R_CORE_VAC_FM ** 2)
     chi_max = float(np.max(chi_local))
