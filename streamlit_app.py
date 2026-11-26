@@ -353,7 +353,7 @@ if make_6_gifs:
 
         res_p = relax_vortex_3d(
             psi0_p, grid_p, med_p,
-            max_steps=min(int(max_steps), 150),
+            max_steps=min(int(max_steps), 600),
             renormalize=False,
             damping_coeff=0.0 if is_radiative else 0.02,
             bc_mode="radiative" if is_radiative else "confined",
