@@ -156,6 +156,15 @@ if run_noise:
 
         res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
 
+        res_p = relax_vortex_3d(
+            psi0_p, grid_p, med_p,
+            max_steps=min(int(max_steps), 150),
+            renormalize=False,
+            damping_coeff=0.0 if is_radiative else 0.02,
+            bc_mode="radiative" if is_radiative else "confined",
+            record_frames=int(n_snap_frames) if is_radiative else 0,
+            stop_on_buckling=not is_radiative,
+        )
 
 
 #        E_start = res["history"]["E_total"]
