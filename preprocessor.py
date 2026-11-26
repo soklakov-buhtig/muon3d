@@ -22,6 +22,8 @@ def build_3d_grid(R0_fm, N=48, box_scale=3.5):
         "dV": dx**3,
         "L_half": L_half,
         "boundary_mask": boundary_mask,
+        "alias_scale": 1.0,
+
     }
 
 
