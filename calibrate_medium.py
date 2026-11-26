@@ -11,11 +11,7 @@ from calibrate_medium import (
     FOUND_PARTICLES_BENCHMARK,
 )
 
-from constants import (
-    M_E_MEV,
-    R_E_COMPTON_FM,
-    R_CORE_VAC_FM,
-)
+
 from preprocessor import build_3d_grid, init_hopf_vortex_3d
 from solution import relax_vortex_3d
 from postprocessor import analyze_relaxed_vortex_3d
