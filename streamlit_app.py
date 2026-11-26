@@ -65,14 +65,37 @@ col_btn1, col_btn2 = st.columns(2)
 run_vortex = col_btn1.button("Запустить 3D-релаксацию узла", type="primary", use_container_width=True)
 run_noise = col_btn2.button("Тест №1: Устойчивость шума (ψ ≈ 0)", use_container_width=True)
 run_calib = st.button("Запустить калибратор среды (поиск электрона и мюона)", use_container_width=True)
+if run_calib = st.button("Настроить среду по младшему узлу и пройти спектр (buckling + динамика)", use_container_width=True)
 if run_calib:
-    with st.spinner("Поиск параметров среды для (2, 3) и (37, 73) в 3D..."):
-        cal_res = calibrate_medium_3d(medium, e_topo=(2, 3), mu_topo=(m_tor, n_pol), N_grid=32, relax_steps=100, max_iter=35)
-    st.subheader(f"Калибровка завершена | Лог-ошибка: {cal_res['loss']:.5f}")
+    with st.spinner(f"1) Калибровка среды на одном узле ({m_tor}, {n_pol}) + 2) последовательный проход спектра..."):
+        cal_res = calibrate_single_and_scan_spectrum(
+            medium,
+            base_topo=(m_tor, n_pol),
+            N_grid=32,
+            dyn_steps=120,
+            max_iter=30,
+        )
+    st.subheader(f"Калибровка завершена | Лог-ошибка младшего узла: {cal_res['loss']:.5f}")
     st.json(cal_res["medium"])
-    col_ce, col_cmu = st.columns(2)
-    col_ce.metric("Электрон (2, 3): Масса / R0", f"{cal_res['obs_e']['mass_mev']:.4f} МэВ | {cal_res['obs_e']['R0_fm']:.1f} фм")
-    col_cmu.metric(f"Мюон ({m_tor}, {n_pol}): Масса / R0", f"{cal_res['obs_mu']['mass_mev']:.2f} МэВ | {cal_res['obs_mu']['R0_fm']:.2f} фм")
+
+    st.subheader("Последовательный проход по топологиям (проверка динамики и buckling)")
+    rows = []
+    for item in cal_res["spectrum"]:
+        rows.append(
+            {
+                "Узел (m, n)": f"{item['topo'][0]}, {item['topo'][1]}",
+                "Выжил": "ДА" if item["survived"] else "НЕТ",
+                "Buckling OK": "ДА" if item["buckling_ok"] else "СРЫВ",
+                "Динамика OK": "ДА" if item["dynamically_stable"] else "НЕТ",
+                "Топология OK": "ДА" if item["topology_preserved"] else "НЕТ",
+                "chi_max": round(item["chi_max"], 4),
+                "Масса (МэВ)": round(item["mass_mev"], 5),
+                "R0 (fm)": round(item["R0_fm"], 3),
+                "g-фактор": round(item["g_factor"], 6),
+            }
+        )
+    st.dataframe(rows, use_container_width=True)
+
 
 if run_noise:
     with st.spinner("Запуск Теста №1 (релаксация малого шума вокруг ψ = 0)..."):
