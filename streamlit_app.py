@@ -100,10 +100,29 @@ if run_calib:
     st.dataframe(rows, use_container_width=True)
 run_cross = st.button("Проверить инвариантность калибровки по каждой найденной частице", use_container_width=True)
 if run_cross:
-    with st.spinner("Независимая калибровка среды по каждой из найденных частиц..."):
-        cross_rows = cross_calibrate_all_particles(medium, N_grid=32, dyn_steps=110, max_iter=35)
+    prog_bar = st.progress(0, text="Подготовка кросс-калибровки по 6 частицам...")
+    live_table = st.empty()
+    partial_rows = []
+
+    def on_particle_done(done_cnt, total_cnt, p_name, row_dict):
+        partial_rows.append(row_dict)
+        prog_bar.progress(
+            done_cnt / total_cnt,
+            text=f"Готово {done_cnt} из {total_cnt}: {p_name} (погр. {row_dict['Погр. массы (%)']}%)",
+        )
+        live_table.dataframe(partial_rows, use_container_width=True)
+
+    cross_rows = cross_calibrate_all_particles(
+        medium,
+        N_grid=32,
+        dyn_steps=75,
+        max_iter=45,
+        progress_callback=on_particle_done,
+    )
+    prog_bar.progress(1.0, text="Кросс-калибровка по всем 6 частицам завершена!")
     st.subheader("Тест независимости констант среды от выбора эталонной частицы")
-    st.dataframe(cross_rows, use_container_width=True)
+    live_table.dataframe(cross_rows, use_container_width=True)
+
 
 
 if run_noise:
