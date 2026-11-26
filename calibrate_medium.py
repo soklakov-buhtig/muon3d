@@ -204,7 +204,9 @@ def cross_calibrate_all_particles(
     keys = ["alpha_nl", "gamma_nl", "beta_nl", "eta_visc", "delta_pack"]
     x0 = np.log10([max(float(base_medium[k]), 1e-6) for k in keys])
     results = []
-    for name, (m_p, n_p), m_target, r_target in particles:
+    for idx, (name, (m_p, n_p), m_target, r_target) in enumerate(particles):
+
+#    for name, (m_p, n_p), m_target, r_target in particles:
         scale_r = (2.0 * 3.0) / max(float(m_p * n_p), 1.0)
         r0_guess = R_E_COMPTON_FM * scale_r
         best_p = {"loss": float("inf"), "medium": dict(base_medium), "obs": None}
@@ -256,4 +258,7 @@ def cross_calibrate_all_particles(
                 "delta_pack": round(med_f["delta_pack"], 4),
             }
         )
+        if progress_callback is not None:
+            progress_callback(idx + 1, len(particles), name, results[-1])
+
     return results
