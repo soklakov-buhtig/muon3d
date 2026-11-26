@@ -131,5 +131,3 @@ def relax_vortex_3d(
         "dt": dt,
         "tau": tau,
     }
-
-    }
