@@ -102,6 +102,7 @@ run_cross = st.button("Проверить инвариантность кали�
 if run_cross:
     prog_bar = st.progress(0, text="Подготовка кросс-калибровки по 6 частицам...")
     live_table = st.empty()
+    
     partial_rows = []
 
     def on_particle_done(done_cnt, total_cnt, p_name, row_dict):
@@ -122,6 +123,17 @@ if run_cross:
     prog_bar.progress(1.0, text="Кросс-калибровка по всем 6 частицам завершена!")
     st.subheader("Тест независимости констант среды от выбора эталонной частицы")
     live_table.dataframe(cross_rows, use_container_width=True)
+    st.session_state["cross_media"] = {
+        r["Эталонная частица"]: {
+            "alpha_nl": r["alpha_nl"],
+            "gamma_nl": r["gamma_nl"],
+            "beta_nl": r["beta_nl"],
+            "eta_visc": r["eta_visc"],
+            "delta_pack": r["delta_pack"],
+            "tau": tau,
+        }
+        for r in cross_rows
+    }
 
 
 
