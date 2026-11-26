@@ -334,8 +334,23 @@ gif_bc_mode = st.radio(
     horizontal=True,
 )
 is_radiative = gif_bc_mode.startswith("2.")
-
 if make_6_gifs:
+    gifs_6 = []
+    prog_6 = st.progress(0, text="Генерация GIF для 6 частиц...")
+    cross_media = st.session_state.get("cross_media", {})
+
+    for idx, (p_name, (m_p, n_p), m_targ, r_targ) in enumerate(FOUND_PARTICLES_BENCHMARK):
+        prog_6.progress(idx / 6.0, text=f"Расчёт и рендер GIF ({idx + 1}/6): {p_name} ({m_p}, {n_p})...")
+        scale_r = (2.0 * 3.0) / max(float(m_p * n_p), 1.0)
+        r0_p = float(R_E_COMPTON_FM) * scale_r
+        N_eff = min(max(int(N_grid), int(2 * max(abs(m_p), abs(n_p)))), 48)
+        b_scale = 5.5 if is_radiative else 3.2
+
+        grid_p = build_3d_grid(r0_p, N=N_eff, box_scale=b_scale)
+        psi0_p = init_hopf_vortex_3d(grid_p, r0_p, r0_p * 0.30, int(m_p), int(n_p))
+        med_p = cross_media.get(p_name, medium)
+
+
     # Запуск расчета 6 гифок с переключением между режимом 'confined' и 'radiative'
     # (см. детали логики генерации в исходных скриптах проекта)
 
