@@ -85,7 +85,10 @@ def relax_vortex_3d(
         ) / (1.0 + damping)
 
         # Применение открытых граничных условий (open BC: поле -> 0 на границе)
-        psi_new *= mask
+           if use_mask:
+            psi_new *= mask
+        else:
+            psi_new = _apply_sommerfeld_bc(psi_new, psi, cfl_c=min(0.45, 0.25 * dt))
 
         # Периодическая перенормировка от численного сдувания (каждые norm_interval шагов)
         if renormalize and norm_interval > 0 and (step % int(norm_interval) == 0):
