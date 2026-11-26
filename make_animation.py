@@ -152,3 +152,48 @@ def build_vortex_gif(psi, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, n_frames
 
     gif_buf.seek(0)
     return gif_buf.getvalue()
+def build_vortex_evolution_gif(psi_frames, grid, azim_deg=45.0, elev_deg=25.0, zoom=1.6, fps=10):
+    """Собирает GIF из реальных временных срезов psi_frames (эволюция / распад вихря)."""
+    import io
+    import matplotlib.pyplot as plt
+    from PIL import Image
+
+    X, Y, Z = grid["X"], grid["Y"], grid["Z"]
+    L_lim = float(grid["L_half"]) / max(float(zoom), 0.3)
+    u0_max = max(float(np.max(np.abs(psi_frames[0]) ** 2)), 1e-12)
+    u_thresh = 0.20 * u0_max
+
+    pil_frames = []
+    total = len(psi_frames)
+    for k, psi_k in enumerate(psi_frames):
+        u_k = np.abs(psi_k) ** 2
+        mask_pts = u_k >= u_thresh
+        fig = plt.figure(figsize=(5.5, 5.0), dpi=110)
+        ax = fig.add_subplot(111, projection="3d")
+        if np.any(mask_pts):
+            ax.scatter(
+                X[mask_pts], Y[mask_pts], Z[mask_pts],
+                c=u_k[mask_pts], cmap="turbo", vmin=u_thresh, vmax=u0_max,
+                s=14, alpha=0.65, edgecolors="none",
+            )
+        ax.set_xlim(-L_lim, L_lim)
+        ax.set_ylim(-L_lim, L_lim)
+        ax.set_zlim(-L_lim, L_lim)
+        ax.view_init(elev=float(elev_deg), azim=float(azim_deg))
+        ax.set_title(f"Шаг эволюции {k + 1}/{total}", fontsize=10)
+        ax.set_xlabel("X (fm)", fontsize=8)
+        ax.set_ylabel("Y (fm)", fontsize=8)
+        ax.set_zlabel("Z (fm)", fontsize=8)
+        plt.tight_layout()
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png")
+        plt.close(fig)
+        buf.seek(0)
+        pil_frames.append(Image.open(buf).convert("P", palette=Image.ADAPTIVE))
+
+    gif_buf = io.BytesIO()
+    first = pil_frames.pop(0)
+    first.save(gif_buf, format="GIF", save_all=True, append_images=pil_frames,
+               duration=int(1000 / max(int(fps), 1)), loop=0)
+    gif_buf.seek(0)
+    return gif_buf.getvalue()
