@@ -64,7 +64,7 @@ def evaluate_single_vortex_dynamics(
     N_grid=32,
     dyn_steps=160,
 #    max_N=68,
-    max_N=40,
+    max_N=68,
 ):
     N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), int(max_N))
 
