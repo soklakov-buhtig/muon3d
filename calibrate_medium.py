@@ -89,3 +89,50 @@ def calibrate_single_and_scan_spectrum(
         "base_result": None,
         "spectrum": [],
     }
+    def loss_fn(log_params):
+        low_b = np.array([-4.0, -3.0, -3.5, -2.5, -4.0])
+        high_b = np.array([1.5, 2.0, 1.0, 1.0, 1.5])
+        vals = 10.0 ** np.clip(log_params, low_b, high_b)
+        med = dict(base_medium)
+        for k, v in zip(keys, vals):
+            med[k] = float(v)
+
+        res_single = evaluate_single_vortex_dynamics(
+            m_base, n_base, med, R0_init=R_E_COMPTON_FM, N_grid=N_grid, dyn_steps=dyn_steps
+        )
+        m_est = res_single["mass_mev"]
+        if not np.isfinite(m_est) or m_est <= 0:
+            return 1e6
+
+        penalty = 0.0
+        if not res_single["buckling_ok"]:
+            penalty += 50.0 + 10.0 * max(res_single["chi_max"] - 1.0, 0.0)
+        if not res_single["dynamically_stable"]:
+            penalty += 30.0
+        if not res_single["topology_preserved"]:
+            penalty += 40.0
+
+        err_m = (np.log10(m_est / M_E_MEV)) ** 2
+        err_r = (np.log10(max(res_single["R0_fm"], 1e-4) / R_E_COMPTON_FM)) ** 2
+        total_loss = float(err_m + 0.5 * err_r + penalty)
+
+        if total_loss < best_state["loss"]:
+            best_state.update(
+                {"loss": total_loss, "medium": med, "base_result": res_single}
+            )
+        return total_loss
+
+    minimize(loss_fn, x0, method="Nelder-Mead", options={"maxiter": int(max_iter), "xatol": 1e-3, "fatol": 1e-4})
+
+    best_med = best_state["medium"]
+    spectrum = []
+    for (m_i, n_i) in topo_sequence:
+        scale_r = (2.0 * 3.0) / max(float(m_i * n_i), 1.0)
+        r0_guess = R_E_COMPTON_FM * (scale_r ** 1.5)
+        item = evaluate_single_vortex_dynamics(
+            m_i, n_i, best_med, R0_init=r0_guess, N_grid=N_grid, dyn_steps=dyn_steps
+        )
+        spectrum.append(item)
+
+    best_state["spectrum"] = spectrum
+    return best_state
