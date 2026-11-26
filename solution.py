@@ -42,6 +42,7 @@ def relax_vortex_3d(
             "E3": energies["E3"],
             "E4": energies["E4"],
             "max_amp": float(np.max(np.abs(psi))),
+            "chi_max": energies.get("chi_max", 0.0),
         }
     ]
 
