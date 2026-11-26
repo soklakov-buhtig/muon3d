@@ -44,6 +44,9 @@ def init_hopf_vortex_3d(grid, R0_fm, sigma_fm, m_tor, n_pol, amplitude=1.0):
 
     # Поперечный профиль амплитуды силовой трубки (исчезает на оси при m_tor*n_pol > 0)
     core_profile = np.exp(-0.5 * (dist_to_core / max(sigma_fm, 1e-3)) ** 2)
+    alias_scale = max(1.0, max(abs(float(m_tor)), abs(float(n_pol))) / 4.0)
+    grid["alias_scale"] = float(alias_scale)
+    phase = (float(m_tor) / alias_scale) * phi + (float(n_pol) / alias_scale) * theta
 
     # Топологическая 3D-фаза узла Хопфа: m_tor обходов по большому кольцу + n_pol по малому
     phase = float(m_tor) * phi + float(n_pol) * theta
