@@ -1,5 +1,10 @@
 import numpy as np
 from scipy.optimize import minimize
+from constants import (
+    M_E_MEV,
+    R_E_COMPTON_FM,
+    R_CORE_VAC_FM,
+)
 from calibrate_medium import (
     calibrate_single_and_scan_spectrum,
     cross_calibrate_all_particles,
