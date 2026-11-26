@@ -17,7 +17,8 @@ def relax_vortex_3d(
     """
     tau = float(medium.get("tau", 1.0))
     dt = 0.5 * tau  # Критическое условие устойчивости: dt = tau / 2
-    damping = dt / max(tau, 1e-12)  # При dt = tau / 2 равно ровно 0.5
+    damping = float(damping_coeff)
+
 
     dx = grid["dx"]
     mask = grid["boundary_mask"]
