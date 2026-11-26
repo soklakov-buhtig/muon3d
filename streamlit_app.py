@@ -303,6 +303,38 @@ with c_btn3:
                 zoom=zoom_val,
                 n_frames=int(n_snap_frames),
             )
+if make_6_gifs:
+    gifs_6 = []
+    prog_6 = st.progress(0, text="Генерация GIF для 6 частиц...")
+    cross_media = st.session_state.get("cross_media", {})
+
+    for idx, (p_name, (m_p, n_p), m_targ, r_targ) in enumerate(FOUND_PARTICLES_BENCHMARK):
+        prog_6.progress(idx / 6.0, text=f"Расчёт и рендер GIF ({idx + 1}/6): {p_name} ({m_p}, {n_p})...")
+        scale_r = (2.0 * 3.0) / max(float(m_p * n_p), 1.0)
+        r0_p = float(R_E_COMPTON_FM) * scale_r
+        N_eff = min(max(int(N_grid), int(2 * max(abs(m_p), abs(n_p)))), 48)
+
+        grid_p = build_3d_grid(r0_p, N=N_eff, box_scale=3.2)
+        psi0_p = init_hopf_vortex_3d(grid_p, r0_p, r0_p * 0.30, int(m_p), int(n_p))
+        med_p = cross_media.get(p_name, medium)
+
+        res_p = relax_vortex_3d(
+            psi0_p, grid_p, med_p,
+            max_steps=min(int(max_steps), 150),
+            renormalize=False,
+            damping_coeff=0.02,
+        )
+        gif_b = build_vortex_gif(
+            res_p["psi"], grid_p,
+            azim_deg=azim_deg,
+            elev_deg=elev_deg,
+            zoom=zoom_val,
+            n_frames=int(n_snap_frames),
+        )
+        gifs_6.append((p_name, f"({m_p}, {n_p})", gif_b))
+
+    prog_6.progress(1.0, text="Все 6 GIF-анимаций готовы!")
+    st.session_state["vortex_gifs_6"] = gifs_6
 
     if "vortex_gif" in st.session_state:
         gif_bytes = st.session_state["vortex_gif"]
