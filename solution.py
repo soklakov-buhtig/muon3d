@@ -98,9 +98,7 @@ def relax_vortex_3d(
         if not np.isfinite(cur_E):
             break
 
-        if step > 50 and abs(cur_E - prev_E) / (abs(cur_E) + 1e-9) < float(tol_energy):
-            converged = True
-            break
+
         if not energies.get("buckling_ok", True):
             buckling_broken = True
             break
@@ -135,12 +133,14 @@ def relax_vortex_3d(
     }
 
         prev_E = cur_E
-
     return {
         "psi": psi,
         "energies": energies,
         "history": history,
-        "converged": converged,
+        "converged": dynamically_stable,
+        "dynamically_stable": dynamically_stable,
+        "buckling_ok": not buckling_broken,
+        "amp_ratio": amp_ratio,
         "steps_done": step,
         "dt": dt,
         "tau": tau,
