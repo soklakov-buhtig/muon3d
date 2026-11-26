@@ -72,6 +72,7 @@ def evaluate_single_vortex_dynamics(
     grid = build_3d_grid(R0_init, N=N_eff, box_scale=3.2)
 
     psi0 = init_hopf_vortex_3d(grid, R0_init, R0_init * 0.30, int(m_tor), int(n_pol))
+
     res = relax_vortex_3d(
         psi0,
         grid,
@@ -219,8 +220,9 @@ def cross_calibrate_all_particles(
             for k, v in zip(keys, vals):
                 med[k] = float(v)
             res_p = evaluate_single_vortex_dynamics(
-                m_p, n_p, med, R0_init=r0_guess, N_grid=N_grid, dyn_steps=dyn_steps
+                m_p, n_p, med, R0_init=r0_guess, N_grid=N_grid, dyn_steps=dyn_steps, max_N=40
             )
+
             m_est = res_p["mass_mev"]
             if not np.isfinite(m_est) or m_est <= 0:
                 return 1e6
