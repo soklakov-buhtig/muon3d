@@ -228,15 +228,20 @@ def cross_calibrate_all_particles(
                 return 1e6
             pen = 0.0 if res_p["buckling_ok"] else 50.0
             pen += 0.0 if res_p["dynamically_stable"] else 30.0
-            err = (np.log10(m_est / float(m_target))) ** 2 + pen
+            err_m = (np.log10(m_est / float(m_target))) ** 2
+            err_r = (np.log10(max(res_p["R0_fm"], 1e-4) / float(r_target))) ** 2
+            err = err_m + 0.5 * err_r + pen
             if err < best_p["loss"]:
                 best_p.update({"loss": float(err), "medium": med, "obs": res_p})
             return float(err)
+
         minimize(
             p_loss,
             x0,
             method="Nelder-Mead",
-            options={"maxiter": int(max_iter), "xatol": 1e-3, "fatol": 1e-4},
+            options={"maxiter": max(int(max_iter), 65), "xatol": 1e-4, "fatol": 1e-5},
+        )
+
         )
         m_found = best_p["obs"]["mass_mev"] if best_p["obs"] else 0.0
         err_pct = abs(m_found - float(m_target)) / float(m_target) * 100.0
