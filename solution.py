@@ -1,6 +1,18 @@
 import numpy as np
 from matrix_assembly import evaluate_energy_and_gradient
 
+def _apply_sommerfeld_bc(psi_new, psi_prev, cfl_c=0.45):
+    """Излучающие граничные условия Зоммерфельда 1-го порядка на 6 гранях куба."""
+    r = float(cfl_c)
+    psi_new[0, :, :] = psi_prev[0, :, :] + r * (psi_prev[1, :, :] - psi_prev[0, :, :])
+    psi_new[-1, :, :] = psi_prev[-1, :, :] + r * (psi_prev[-2, :, :] - psi_prev[-1, :, :])
+    psi_new[:, 0, :] = psi_prev[:, 0, :] + r * (psi_prev[:, 1, :] - psi_prev[:, 0, :])
+    psi_new[:, -1, :] = psi_prev[:, -1, :] + r * (psi_prev[:, -2, :] - psi_prev[:, -1, :])
+    psi_new[:, :, 0] = psi_prev[:, :, 0] + r * (psi_prev[:, :, 1] - psi_prev[:, :, 0])
+    psi_new[:, :, -1] = psi_prev[:, :, -1] + r * (psi_prev[:, :, -2] - psi_prev[:, :, -1])
+    return psi_new
+
+
 def relax_vortex_3d(
     psi_init,
     grid,
