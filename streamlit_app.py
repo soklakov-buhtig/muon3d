@@ -65,8 +65,7 @@ col_btn1, col_btn2 = st.columns(2)
 run_vortex = col_btn1.button("Запустить 3D-релаксацию узла", type="primary", use_container_width=True)
 run_noise = col_btn2.button("Тест №1: Устойчивость шума (ψ ≈ 0)", use_container_width=True)
 run_calib = st.button("Запустить калибратор среды (поиск электрона и мюона)", use_container_width=True)
-if run_calib = st.button("Настроить среду по младшему узлу и пройти спектр (buckling + динамика)", use_container_width=True)
-if run_calib:
+run_calib:
     with st.spinner(f"1) Калибровка среды на одном узле ({m_tor}, {n_pol}) + 2) последовательный проход спектра..."):
         cal_res = calibrate_single_and_scan_spectrum(
             medium,
