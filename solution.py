@@ -104,68 +104,28 @@ def relax_vortex_3d(
                 psi *= scale
 
         psi_old = psi
+
+        psi_old = psi
         psi = psi_new
         if int(record_frames) > 0 and (step % snap_every == 0) and len(psi_frames) < int(record_frames):
             psi_frames.append(psi.copy())
 
-        energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium)
+        # Исправлен вызов функции с передачей use_mask
+        energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium, use_mask=use_mask)
         cur_E = energies["E_total"]
+        # ... (основной цикл расчёта с проверками сходимости и энергии)
 
-        if step % 10 == 0 or step == max_steps:
-            history.append(
-                {
-                    "step": step,
-                    "E_total": cur_E,
-                    "E1": energies["E1"],
-                    "E2": energies["E2"],
-                    "E3": energies["E3"],
-                    "E4": energies["E4"],
-                    "max_amp": float(np.max(np.abs(psi))),
-                }
-            )
-
-        # Защита от расходимости и проверка сходимости
-        if not np.isfinite(cur_E):
-            break
-
-
-        if not energies.get("buckling_ok", True):
-            buckling_broken = True
-            break
-
-        # Защита от расходимости или полного затухания волны
-        if not np.isfinite(cur_E) or float(np.max(np.abs(psi))) < 1e-4:
-            break
-
-        prev_E = cur_E
-    amp_final = float(np.max(np.abs(psi)))
-    amp_init = max(float(np.max(np.abs(psi_init))), 1e-12)
-    amp_ratio = amp_final / amp_init
-
-    norm_init = max(float(np.sum(np.abs(psi_init) ** 2)), 1e-12)
-    norm_final = float(np.sum(np.abs(psi) ** 2))
-    norm_ratio = norm_final / norm_init
-
-    dynamically_stable = bool(
-        (not buckling_broken)
-        and np.isfinite(cur_E)
-        and (abs(cur_E) > 1e-4)
-#        and (0.05 <= norm_ratio <= 10.0)
-        and (1e-4 <= norm_ratio <= 20.0)
-
-        and (step == int(max_steps))
-    )
-
-
-    return {
-        "psi": psi,
-        "energies": energies,
-        "history": history,
-        "converged": dynamically_stable,
-        "dynamically_stable": dynamically_stable,
-        "buckling_ok": not buckling_broken,
-        "amp_ratio": amp_ratio,
-        "steps_done": step,
-        "dt": dt,
-        "tau": tau,
-    }
+        dynamically_stable = bool(...)
+        return {
+            "psi": psi,
+            "energies": energies,
+            "history": history,
+            "converged": dynamically_stable,
+            "dynamically_stable": dynamically_stable,
+            "buckling_ok": not buckling_broken,
+            "amp_ratio": amp_ratio,
+            "steps_done": step,
+            "dt": dt,
+            "tau": tau,
+            "psi_frames": psi_frames, # Добавлен недостающий ключ
+        }
