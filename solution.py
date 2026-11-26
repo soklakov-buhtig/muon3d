@@ -133,6 +133,7 @@ def relax_vortex_3d(
     }
 
         prev_E = cur_E
+
     return {
         "psi": psi,
         "energies": energies,
