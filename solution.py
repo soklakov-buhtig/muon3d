@@ -129,7 +129,7 @@ def relax_vortex_3d(
         if stop_on_buckling and float(np.max(np.abs(psi))) < 1e-4:
             break
         prev_E = cur_E
-        amp_final = float(np.max(np.abs(psi)))
+    amp_final = float(np.max(np.abs(psi)))
     amp_init = max(float(np.max(np.abs(psi_init))), 1e-12)
     amp_ratio = amp_final / amp_init
     norm_init = max(float(np.sum(np.abs(psi_init) ** 2)), 1e-12)
@@ -148,4 +148,3 @@ def relax_vortex_3d(
         "buckling_ok": not buckling_broken, "amp_ratio": amp_ratio,
         "steps_done": step, "dt": dt, "tau": tau, "psi_frames": psi_frames,
     }
-
