@@ -101,8 +101,9 @@ if run_noise:
         grid = build_3d_grid(R0_init, N=N_grid, box_scale=box_scale)
         psi_noise = init_noise_field_3d(grid, noise_amp=1e-3)
  #       res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
-        res = relax_vortex_3d(
-            psi0, grid, medium,
+
+        res = relax_vortex_3d(psi_noise, grid, medium, max_steps=min(max_steps, 300), renormalize=False)
+
             max_steps=max_steps,
             renormalize=False,
             damping_coeff=0.02,
