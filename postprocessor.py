@@ -15,9 +15,18 @@ def measure_winding_numbers_3d(psi, grid, R0_est_fm, m_target, n_target):
 
     gx, gy, gz = _grad_3d(psi, dx)
     # Локальный градиент фазы grad(phi) = Im(psi* grad psi) / |psi|^2
-    vx = np.imag(np.conj(psi) * gx) / u_safe
-    vy = np.imag(np.conj(psi) * gy) / u_safe
-    vz = np.imag(np.conj(psi) * gz) / u_safe
+    vx = np.zeros_like(u)
+    vy = np.zeros_like(u)
+    vz = np.zeros_like(u)
+    vx[1:-1, :, :] = np.angle(psi[2:, :, :] * np.conj(psi[:-2, :, :])) * (0.5 / dx)
+    vy[:, 1:-1, :] = np.angle(psi[:, 2:, :] * np.conj(psi[:, :-2, :])) * (0.5 / dx)
+    vz[:, :, 1:-1] = np.angle(psi[:, :, 2:] * np.conj(psi[:, :, :-2])) * (0.5 / dx)
+
+
+    
+#    vx = np.imag(np.conj(psi) * gx) / u_safe
+ #   vy = np.imag(np.conj(psi) * gy) / u_safe
+ #   vz = np.imag(np.conj(psi) * gz) / u_safe
 
     rho = np.sqrt(X**2 + Y**2) + 1e-12
     # Азимутальная скорость фазы вокруг оси Z: d(phase)/d(phi) = -Y*vx + X*vy
