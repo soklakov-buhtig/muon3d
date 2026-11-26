@@ -296,38 +296,7 @@ elif lock_and_animate or make_snapshots:
     st.warning("Сначала запустите 3D-релаксацию узла или нажмите «GIF для 6 частиц».")
 
 
-    run_data = st.session_state["last_3d_run"]
-    anim_slot = st.empty()
-    if lock_and_animate:
-        import time
-        t_start = time.time()
-        for step_t in range(25):
-            phase_t = 2.0 * np.pi * (step_t / 24.0)
-            elapsed = time.time() - t_start
-            t_str = f"t = {elapsed:.2f} с (фаза {step_t}/24 T)"
-            fig_step = build_vortex_time_animation(
-                run_data["psi"],
-                run_data["grid"],
-                azim_deg=azim_deg,
-                elev_deg=elev_deg,
-                zoom=zoom_val,
-                phase_t=phase_t,
-                time_label=t_str,
-            )
-            anim_slot.plotly_chart(fig_step, use_container_width=True, key=f"anim_t_{step_t}")
-            time.sleep(0.06)
-    else:
-        fig_preview = build_vortex_time_animation(
-            run_data["psi"],
-            run_data["grid"],
-            azim_deg=azim_deg,
-            elev_deg=elev_deg,
-            zoom=zoom_val,
-    #        phase_t=0.0,
-            phase_t=2.0 * np.pi * (manual_step / 24.0),
-            time_label="t = 0.00 с (камера зафиксирована)",
-        )
-        anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
+
 n_snap_frames = st.number_input("Количество кадров GIF", min_value=8, max_value=240, value=16, step=8)
 
 if make_snapshots and "last_3d_run" in st.session_state:
