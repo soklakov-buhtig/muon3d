@@ -232,3 +232,27 @@ def cross_calibrate_all_particles(
             if err < best_p["loss"]:
                 best_p.update({"loss": float(err), "medium": med, "obs": res_p})
             return float(err)
+        minimize(
+            p_loss,
+            x0,
+            method="Nelder-Mead",
+            options={"maxiter": int(max_iter), "xatol": 1e-3, "fatol": 1e-4},
+        )
+        m_found = best_p["obs"]["mass_mev"] if best_p["obs"] else 0.0
+        err_pct = abs(m_found - float(m_target)) / float(m_target) * 100.0
+        med_f = best_p["medium"]
+        results.append(
+            {
+                "Эталонная частица": name,
+                "Топология": f"({m_p}, {n_p})",
+                "Масса табл. (МэВ)": round(float(m_target), 4),
+                "Масса выч. (МэВ)": round(float(m_found), 4),
+                "Погр. массы (%)": round(float(err_pct), 2),
+                "alpha_nl": round(med_f["alpha_nl"], 6),
+                "gamma_nl": round(med_f["gamma_nl"], 5),
+                "beta_nl": round(med_f["beta_nl"], 4),
+                "eta_visc": round(med_f["eta_visc"], 5),
+                "delta_pack": round(med_f["delta_pack"], 4),
+            }
+        )
+    return results
