@@ -110,7 +110,8 @@ def calibrate_single_and_scan_spectrum(
     def loss_fn(log_params):
         low_b = np.array([-4.0, -3.0, -3.5, -3.0, -4.0])
 #        high_b = np.array([1.5, 2.0, 0.5, -0.6, 1.5])
-        high_b = np.array([1.5, 2.0, 0.0, -1.0, 1.5])
+#        high_b = np.array([1.5, 2.0, 0.0, -1.0, 1.5])
+        high_b = np.array([1.5, 2.0, 0.0, -1.6, 1.5])
 
 
         vals = 10.0 ** np.clip(log_params, low_b, high_b)
