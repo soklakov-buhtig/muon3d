@@ -48,7 +48,7 @@ def relax_vortex_3d(
     psi = psi_init.copy().astype(np.complex128)
     psi_old = psi.copy()
 
-    energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium)
+    energies, dE_dpsi = evaluate_energy_and_gradient(psi, grid, medium, use_mask=use_mask)
     history = [
         {
             "step": 0,
