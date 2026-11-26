@@ -116,5 +116,8 @@ def evaluate_energy_and_gradient(psi, grid, medium):
         "E2": E2,
         "E3": E3,
         "E4": E4,
+        "chi_max": chi_max,
+        "buckling_ok": buckling_ok,
     }
+
     return energies, dE_dpsi
