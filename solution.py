@@ -132,17 +132,4 @@ def relax_vortex_3d(
         "tau": tau,
     }
 
-        prev_E = cur_E
-
-    return {
-        "psi": psi,
-        "energies": energies,
-        "history": history,
-        "converged": dynamically_stable,
-        "dynamically_stable": dynamically_stable,
-        "buckling_ok": not buckling_broken,
-        "amp_ratio": amp_ratio,
-        "steps_done": step,
-        "dt": dt,
-        "tau": tau,
     }
