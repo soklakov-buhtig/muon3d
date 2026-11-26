@@ -59,7 +59,9 @@ def evaluate_single_vortex_dynamics(
     и проверяет прохождение buckling и динамическую устойчивость.
     """
 #    grid = build_3d_grid(R0_init, N=N_grid, box_scale=3.2)
-    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 56)
+#    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 56)
+    N_eff = min(max(int(N_grid), int(2 * max(abs(m_tor), abs(n_pol)))), 68)
+
     grid = build_3d_grid(R0_init, N=N_eff, box_scale=3.2)
 
     psi0 = init_hopf_vortex_3d(grid, R0_init, R0_init * 0.30, int(m_tor), int(n_pol))
