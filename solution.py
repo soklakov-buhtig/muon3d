@@ -136,3 +136,17 @@ def relax_vortex_3d(
     norm_init = max(float(np.sum(np.abs(psi_init) ** 2)), 1e-12)
     norm_final = float(np.sum(np.abs(psi) ** 2))
     norm_ratio = norm_final / norm_init
+
+    dynamically_stable = bool(
+        (not buckling_broken)
+        and np.isfinite(cur_E)
+        and (abs(cur_E) > 1e-4)
+        and (1e-4 <= norm_ratio <= 20.0)
+        and (step == int(max_steps))
+    )
+    return {
+        "psi": psi, "energies": energies, "history": history,
+        "converged": dynamically_stable, "dynamically_stable": dynamically_stable,
+        "buckling_ok": not buckling_broken, "amp_ratio": amp_ratio,
+        "steps_done": step, "dt": dt, "tau": tau, "psi_frames": psi_frames,
+    }
