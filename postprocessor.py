@@ -40,12 +40,12 @@ def measure_winding_numbers_3d(psi, grid, R0_est_fm, m_target, n_target):
     # Взвешиваем по плотной части силовой трубки (где |psi|^2 > 15% от максимума)
 #    mask_core = u > (0.15 * np.max(u))
     mask_core = u > (0.45 * np.max(u))
-
+    alias_scale = float(grid.get("alias_scale", 1.0))
     if np.any(mask_core):
         weights = u[mask_core]
         w_sum = float(np.sum(weights))
-        m_meas = float(np.sum(m_local[mask_core] * weights) / w_sum)
-        n_meas = float(np.sum(n_local[mask_core] * weights) / w_sum)
+        m_meas = float(np.sum(m_local[mask_core] * weights) / w_sum) * alias_scale
+        n_meas = float(np.sum(n_local[mask_core] * weights) / w_sum) * alias_scale
     else:
         m_meas = 0.0
         n_meas = 0.0
