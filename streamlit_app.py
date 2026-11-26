@@ -2,7 +2,9 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 
-from calibrate_medium import calibrate_single_and_scan_spectrum
+#from calibrate_medium import calibrate_single_and_scan_spectrum
+from calibrate_medium import calibrate_single_and_scan_spectrum, cross_calibrate_all_particles
+
 
 
 from constants import DEFAULT_MEDIUM, DEFAULT_GRID, M_E_MEV, M_MU_MEV, R_E_COMPTON_FM, R_MU_COMPTON_FM
@@ -96,6 +98,12 @@ if run_calib:
             }
         )
     st.dataframe(rows, use_container_width=True)
+run_cross = st.button("Проверить инвариантность калибровки по каждой найденной частице", use_container_width=True)
+if run_cross:
+    with st.spinner("Независимая калибровка среды по каждой из найденных частиц..."):
+        cross_rows = cross_calibrate_all_particles(medium, N_grid=32, dyn_steps=110, max_iter=35)
+    st.subheader("Тест независимости констант среды от выбора эталонной частицы")
+    st.dataframe(cross_rows, use_container_width=True)
 
 
 if run_noise:
