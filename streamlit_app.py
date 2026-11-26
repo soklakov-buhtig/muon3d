@@ -201,6 +201,7 @@ if "last_3d_run" in st.session_state:
             time_label="t = 0.00 с (камера зафиксирована)",
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
+    n_snap_frames = st.number_input("Количество кадров GIF", min_value=8, max_value=240, value=16, step=8)
     if make_snapshots:
         with st.spinner("Сборка GIF-анимации..."):
             st.session_state["vortex_gif"] = build_vortex_gif(
