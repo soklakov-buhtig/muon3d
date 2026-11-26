@@ -323,17 +323,27 @@ elif lock_and_animate or make_snapshots:
             time_label="t = 0.00 с (камера зафиксирована)",
         )
         anim_slot.plotly_chart(fig_preview, use_container_width=True, key="anim_preview")
-    n_snap_frames = st.number_input("Количество кадров GIF", min_value=8, max_value=240, value=16, step=8)
-    if make_snapshots:
-        with st.spinner("Сборка GIF-анимации..."):
-            st.session_state["vortex_gif"] = build_vortex_gif(
-                run_data["psi"],
-                run_data["grid"],
-                azim_deg=azim_deg,
-                elev_deg=elev_deg,
-                zoom=zoom_val,
-                n_frames=int(n_snap_frames),
-            )
+n_snap_frames = st.number_input("Количество кадров GIF", min_value=8, max_value=240, value=16, step=8)
+
+if make_snapshots and "last_3d_run" in st.session_state:
+    run_data = st.session_state["last_3d_run"]
+    with st.spinner("Сборка GIF-анимации..."):
+        st.session_state["vortex_gif"] = build_vortex_gif(
+            run_data["psi"], run_data["grid"],
+            azim_deg=azim_deg, elev_deg=elev_deg,
+            zoom=zoom_val, n_frames=int(n_snap_frames),
+        )
+
+if "vortex_gif" in st.session_state:
+    gif_bytes = st.session_state["vortex_gif"]
+    st.image(gif_bytes)
+    st.download_button(
+        label="Скачать GIF-анимацию",
+        data=gif_bytes,
+        file_name="vortex_evolution.gif",
+        mime="image/gif",
+    )
+
 if make_6_gifs:
     gifs_6 = []
     prog_6 = st.progress(0, text="Генерация GIF для 6 частиц...")
@@ -352,27 +362,29 @@ if make_6_gifs:
         res_p = relax_vortex_3d(
             psi0_p, grid_p, med_p,
             max_steps=min(int(max_steps), 150),
-            renormalize=False,
-            damping_coeff=0.02,
+            renormalize=False, damping_coeff=0.02,
         )
         gif_b = build_vortex_gif(
             res_p["psi"], grid_p,
-            azim_deg=azim_deg,
-            elev_deg=elev_deg,
-            zoom=zoom_val,
-            n_frames=int(n_snap_frames),
+            azim_deg=azim_deg, elev_deg=elev_deg,
+            zoom=zoom_val, n_frames=int(n_snap_frames),
         )
         gifs_6.append((p_name, f"({m_p}, {n_p})", gif_b))
 
     prog_6.progress(1.0, text="Все 6 GIF-анимаций готовы!")
     st.session_state["vortex_gifs_6"] = gifs_6
 
-    if "vortex_gif" in st.session_state:
-        gif_bytes = st.session_state["vortex_gif"]
-        st.image(gif_bytes)
-        st.download_button(
-            label="Скачать GIF-анимацию",
-            data=gif_bytes,
-            file_name="vortex_evolution.gif",
-            mime="image/gif",
-        )
+if "vortex_gifs_6" in st.session_state:
+    st.subheader("Динамика 6 найденных частиц")
+    cols_6 = st.columns(3)
+    for idx, (p_name, topo_str, gif_b) in enumerate(st.session_state["vortex_gifs_6"]):
+        with cols_6[idx % 3]:
+            st.markdown(f"**{p_name}** `{topo_str}`")
+            st.image(gif_b)
+            st.download_button(
+                label=f"Скачать GIF ({topo_str})",
+                data=gif_b,
+                file_name=f"particle_{idx + 1}_{topo_str.strip('()').replace(', ', '_')}.gif",
+                mime="image/gif",
+                key=f"dl_gif_6_{idx}",
+            )
