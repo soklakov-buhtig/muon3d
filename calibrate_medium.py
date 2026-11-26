@@ -5,11 +5,6 @@ from constants import (
     R_E_COMPTON_FM,
     R_CORE_VAC_FM,
 )
-from calibrate_medium import (
-    calibrate_single_and_scan_spectrum,
-    cross_calibrate_all_particles,
-    FOUND_PARTICLES_BENCHMARK,
-)
 
 
 from preprocessor import build_3d_grid, init_hopf_vortex_3d
